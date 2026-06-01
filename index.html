@@ -1,359 +1,699 @@
-<!DOCTYPE html>
+<!DOCTYPE html><script type="application/json" id="cowork-artifact-meta">
+{
+  "name": "Tracker Bonus Q2 Na",
+  "schemaVersion": 1,
+  "description": "Suivi quotidien du bonus Q2 2026 pour l'area NA. Affiche le Net eGMV vs target Q2 pour chaque AM sur les Existing Properties et NLP. Inclut un onglet \"Évolution hebdomadaire\" avec snapshots du mercredi montrant l'écart vs pace au fil du temps."
+}
+</script>
 <html lang="fr">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Tracker Bonus Q2 2026 — Nouvelle-Aquitaine</title>
+<title>Suivi Bonus Q2 2026 — Area NA</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.5.0/dist/chart.umd.js" integrity="sha384-iU8HYtnGQ8Cy4zl7gbNMOhsDTTKX02BTXptVP/vqAWIaTfM7isw76iyZCsjL2eVi" crossorigin="anonymous"></script>
 <style>
   :root {
-    --brand: #FF5A5F;
-    --brand-light: #fff0f0;
-    --green: #22c55e;
-    --green-light: #dcfce7;
-    --orange: #f97316;
-    --orange-light: #ffedd5;
-    --red: #ef4444;
-    --red-light: #fee2e2;
-    --blue: #3b82f6;
-    --blue-light: #dbeafe;
-    --gray: #6b7280;
-    --gray-light: #f3f4f6;
-    --bg: #f9fafb;
-    --card: #ffffff;
-    --border: #e5e7eb;
-    --text: #111827;
-    --text-muted: #6b7280;
+    color-scheme: light;
+    --teal: #1D9E75;
+    --teal-light: #E1F5EE;
+    --teal-mid: #9FE1CB;
+    --navy: #0d2d3a;
+    --navy-mid: #1a4a5e;
+    --blue: #378add;
+    --blue-light: #E6F1FB;
+    --amber: #BA7517;
+    --amber-light: #FAEEDA;
+    --red: #E24B4A;
+    --red-light: #FCEBEB;
+    --green: #1a5c2e;
+    --green-light: #d4edda;
+    --gray: #f4f3f0;
+    --gray-mid: #b4b2a9;
+    --text: #1a1a18;
+    --text-muted: #6b6b65;
+    --border: rgba(0,0,0,0.08);
+    --radius: 12px;
+    --radius-sm: 8px;
   }
   * { box-sizing: border-box; margin: 0; padding: 0; }
-  body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; }
+  body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif; background: #f0ede8; color: var(--text); min-height: 100vh; padding: 32px 24px; }
+  .page { max-width: 1040px; margin: 0 auto; }
 
-  header { background: var(--card); border-bottom: 1px solid var(--border); padding: 16px 24px; display: flex; align-items: center; justify-content: space-between; }
-  header h1 { font-size: 18px; font-weight: 700; color: var(--brand); }
-  header .meta { font-size: 12px; color: var(--text-muted); text-align: right; }
+  /* HEADER */
+  .header { background: var(--navy); border-radius: 16px; padding: 28px 32px; margin-bottom: 24px; display: flex; justify-content: space-between; align-items: flex-start; gap: 16px; }
+  .header h1 { color: #fff; font-size: 22px; font-weight: 600; margin-bottom: 6px; }
+  .header p { color: #7bb8c8; font-size: 13px; }
+  .date-badge { background: #fff3cd; border: 1px solid #f0c040; border-radius: var(--radius-sm); padding: 10px 16px; text-align: center; font-size: 12px; color: #7a5800; white-space: nowrap; flex-shrink: 0; }
+  .date-badge strong { display: block; font-size: 14px; font-weight: 600; }
+  .last-update { background: #e8edf2; color: #3a4a5a; font-size: 11px; padding: 4px 10px; border-radius: 12px; margin-top: 6px; display: inline-block; }
 
-  .container { padding: 24px; max-width: 1200px; margin: 0 auto; }
+  .section-label { font-size: 11px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: var(--text-muted); margin-bottom: 10px; padding-left: 4px; }
 
-  .progress-banner { background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 16px 20px; margin-bottom: 24px; display: flex; align-items: center; gap: 16px; }
-  .progress-banner .day { font-size: 13px; color: var(--text-muted); }
-  .progress-banner .day strong { color: var(--text); font-size: 15px; }
-  .progress-banner .divider { width: 1px; height: 32px; background: var(--border); }
-  .pace-bar-wrap { flex: 1; }
-  .pace-bar-wrap label { font-size: 11px; color: var(--text-muted); display: block; margin-bottom: 4px; }
-  .pace-bar { height: 8px; background: var(--gray-light); border-radius: 4px; overflow: hidden; position: relative; }
-  .pace-bar-fill { height: 100%; border-radius: 4px; transition: width 0.5s ease; }
+  /* MONTH CARDS */
+  .months-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-bottom: 24px; }
+  .month-card { background: #fff; border: 1px solid var(--border); border-radius: var(--radius); padding: 16px; text-align: center; }
+  .month-card .label { font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.06em; color: var(--text-muted); margin-bottom: 8px; }
+  .month-card .amount { font-size: 20px; font-weight: 600; color: var(--text); margin-bottom: 2px; font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; }
+  .month-card .pct { font-size: 12px; color: var(--text-muted); margin-bottom: 10px; }
+  .bar-wrap { background: #eee; border-radius: 4px; height: 5px; overflow: hidden; margin-bottom: 8px; }
+  .bar-fill { height: 100%; border-radius: 4px; transition: width 0.6s ease; }
+  .month-card .status { font-size: 11px; color: var(--text-muted); }
 
-  h2 { font-size: 14px; font-weight: 600; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 12px; }
+  /* TABS */
+  .tabs { display: flex; gap: 8px; margin-bottom: 16px; flex-wrap: wrap; }
+  .tab { padding: 8px 20px; border-radius: 20px; font-size: 13px; font-weight: 500; cursor: pointer; border: 1.5px solid transparent; transition: all 0.2s; background: #fff; color: var(--text-muted); border-color: var(--border); }
+  .tab.active { background: var(--navy); color: #fff; border-color: var(--navy); }
+  .tab:not(.active):hover { border-color: var(--navy); color: var(--navy); }
 
-  .section { margin-bottom: 32px; }
+  /* TABLE */
+  .table-wrap { background: #fff; border: 1px solid var(--border); border-radius: var(--radius); overflow: hidden; margin-bottom: 24px; }
+  table { width: 100%; border-collapse: collapse; }
+  thead tr { background: var(--navy); }
+  thead th { color: #9cc8d5; font-weight: 500; padding: 12px 14px; text-align: right; font-size: 11px; text-transform: uppercase; letter-spacing: 0.05em; }
+  thead th:first-child { text-align: left; }
+  tbody tr { border-top: 1px solid var(--border); transition: background 0.15s; }
+  tbody tr:hover { background: #fafaf8; }
+  tbody td { padding: 14px 14px; font-size: 13px; text-align: right; color: var(--text); }
+  tbody td:first-child { text-align: left; font-weight: 600; font-size: 14px; }
+  .mono { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; font-size: 13px; }
 
-  .grid { display: grid; gap: 12px; }
-  .grid-2 { grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); }
-  .grid-3 { grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); }
+  /* NLP / SM header style */
+  thead.sm-thead tr { background: #064e3b; }
+  thead.sm-thead th { color: #a7f3d0; }
 
-  .card { background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 16px; }
-  .card .name { font-size: 14px; font-weight: 600; margin-bottom: 12px; }
+  .badge { display: inline-flex; flex-direction: column; align-items: center; padding: 5px 12px; border-radius: 20px; font-size: 12px; font-weight: 600; line-height: 1.4; }
+  .badge span { font-size: 11px; font-weight: 400; }
+  .badge-pct { background: #e8edf2; color: #3a4a5a; }
+  .badge-advance { background: var(--green-light); color: var(--green); }
+  .badge-ok { background: var(--amber-light); color: var(--amber); }
+  .badge-retard { background: var(--red-light); color: var(--red); }
 
-  .metric-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; }
-  .metric-label { font-size: 12px; color: var(--text-muted); }
-  .metric-value { font-size: 13px; font-weight: 600; }
+  /* NLP EXPLAINER */
+  .nlp-explainer { background: #f0fdf4; border: 1px solid #bbf7d0; border-radius: var(--radius); padding: 14px 18px; margin-bottom: 18px; display: flex; gap: 14px; align-items: flex-start; }
+  .nlp-explainer-icon { font-size: 20px; flex-shrink: 0; }
+  .nlp-explainer h3 { font-size: 14px; font-weight: 600; color: #065f46; margin-bottom: 3px; }
+  .nlp-explainer p { font-size: 12px; color: #047857; line-height: 1.5; }
+  .nlp-explainer .ref { font-size: 11px; color: #6b7280; margin-top: 3px; font-style: italic; }
 
-  .bar-wrap { margin-top: 10px; }
-  .bar-wrap label { font-size: 11px; color: var(--text-muted); display: flex; justify-content: space-between; margin-bottom: 3px; }
-  .bar { height: 6px; background: var(--gray-light); border-radius: 3px; overflow: hidden; position: relative; }
-  .bar-fill { height: 100%; border-radius: 3px; }
-  .bar-pace { position: absolute; top: -2px; width: 2px; height: 10px; background: rgba(0,0,0,0.3); border-radius: 1px; }
+  /* CURVE CANVAS */
+  .curve-wrap { background: #fff; border: 1px solid var(--border); border-radius: var(--radius); padding: 18px 20px; margin-bottom: 18px; }
+  .curve-wrap h3 { font-size: 13px; font-weight: 600; color: var(--navy); margin-bottom: 12px; }
+  canvas#nlpCurve { display: block; width: 100%; }
 
-  .delta-badge { display: inline-flex; align-items: center; font-size: 11px; font-weight: 600; padding: 2px 7px; border-radius: 20px; margin-left: 6px; }
-  .delta-pos { background: var(--green-light); color: #15803d; }
-  .delta-neg { background: var(--red-light); color: #b91c1c; }
-  .delta-neu { background: var(--gray-light); color: var(--gray); }
+  /* SM SUB-SECTION */
+  .section-divider { display:flex; align-items:center; gap:10px; margin: 28px 0 16px; }
+  .section-divider .stick { background: #064e3b; width: 4px; height: 24px; border-radius: 2px; flex-shrink:0 }
+  .section-divider .title { font-size: 15px; font-weight: 700; color: var(--text); }
+  .section-divider .sub { font-size: 12px; color: var(--text-muted); margin-top: 1px; }
 
-  .sm-card { background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 14px 16px; display: grid; grid-template-columns: 28px 1fr auto; gap: 8px; align-items: center; }
-  .sm-rank { font-size: 13px; font-weight: 700; color: var(--text-muted); text-align: center; }
-  .sm-rank.top { color: var(--green); }
-  .sm-name { font-size: 14px; font-weight: 600; }
-  .sm-stats { font-size: 11px; color: var(--text-muted); margin-top: 2px; }
-  .sm-right { text-align: right; }
-  .sm-pct { font-size: 15px; font-weight: 700; }
-  .sm-egmv-pct { font-size: 11px; color: var(--text-muted); }
-  .sm-bar { margin-top: 6px; height: 4px; background: var(--gray-light); border-radius: 2px; overflow: hidden; grid-column: 2 / -1; }
-  .sm-bar-fill { height: 100%; border-radius: 2px; }
+  .am-section-divider .stick { background: #0ea5e9 !important; }
 
-  .monthly-dots { display: flex; gap: 4px; margin-top: 4px; }
-  .dot { width: 8px; height: 8px; border-radius: 50%; }
+  /* LEGEND */
+  .legend { display: flex; gap: 16px; flex-wrap: wrap; margin-bottom: 24px; font-size: 12px; color: var(--text-muted); align-items: center; padding-left: 4px; }
+  .legend-item { display: flex; align-items: center; gap: 6px; }
+  .dot { width: 10px; height: 10px; border-radius: 50%; }
 
-  .history-section { background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 16px; }
-  .history-empty { color: var(--text-muted); font-size: 13px; font-style: italic; }
-  .snapshot-row { display: flex; align-items: flex-start; gap: 12px; padding: 10px 0; border-bottom: 1px solid var(--gray-light); }
-  .snapshot-row:last-child { border-bottom: none; }
-  .snapshot-date { font-size: 12px; font-weight: 600; color: var(--text-muted); min-width: 80px; }
-  .snapshot-data { display: flex; flex-wrap: wrap; gap: 6px; }
-  .snapshot-chip { font-size: 11px; padding: 2px 8px; border-radius: 20px; background: var(--gray-light); }
+  .footer-note { font-size: 11px; color: var(--gray-mid); text-align: center; margin-top: 8px; line-height: 1.6; }
 
-  .tabs { display: flex; gap: 2px; background: var(--gray-light); padding: 3px; border-radius: 8px; margin-bottom: 16px; width: fit-content; }
-  .tab { padding: 6px 14px; font-size: 12px; font-weight: 500; border-radius: 6px; cursor: pointer; border: none; background: transparent; color: var(--text-muted); transition: all 0.15s; }
-  .tab.active { background: var(--card); color: var(--text); box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
+  .am-name-sub { font-size: 11px; font-weight: 400; color: var(--text-muted); display: block; }
 
-  @media (max-width: 600px) {
-    .container { padding: 12px; }
-    .grid-2, .grid-3 { grid-template-columns: 1fr; }
-    .progress-banner { flex-wrap: wrap; }
-  }
+  /* Panel */
+  .panel { display: none; }
+  .panel.active { display: block; }
+
+  /* EVOLUTION TAB */
+  .chart-wrap { background: #fff; border: 1px solid var(--border); border-radius: var(--radius); padding: 20px; margin-bottom: 20px; }
+  .chart-wrap h3 { font-size: 14px; font-weight: 600; color: var(--navy); margin-bottom: 4px; }
+  .chart-wrap .subtitle { font-size: 12px; color: var(--text-muted); margin-bottom: 16px; }
+  .chart-canvas { width: 100%; height: 280px; position: relative; }
+  .empty-state { background: #fff; border: 1px dashed var(--gray-mid); border-radius: var(--radius); padding: 40px 20px; text-align: center; color: var(--text-muted); font-size: 13px; }
+  .empty-state strong { display: block; color: var(--text); font-size: 14px; margin-bottom: 6px; }
+  .snapshot-table-wrap { background: #fff; border: 1px solid var(--border); border-radius: var(--radius); overflow: hidden; margin-bottom: 20px; }
+  .snapshot-table-wrap h3 { padding: 16px 20px; font-size: 14px; font-weight: 600; color: var(--navy); background: #fafaf8; border-bottom: 1px solid var(--border); }
+  .snapshot-table { font-size: 12px; }
+  .snapshot-table th, .snapshot-table td { padding: 10px 12px; text-align: right; border-bottom: 1px solid var(--border); }
+  .snapshot-table th { background: var(--navy); color: #9cc8d5; font-weight: 500; font-size: 11px; text-transform: uppercase; }
+  .snapshot-table th:first-child, .snapshot-table td:first-child { text-align: left; font-weight: 600; }
+  .delta-cell { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; }
+  .delta-positive { color: var(--green); }
+  .delta-negative-mild { color: var(--amber); }
+  .delta-negative-strong { color: var(--red); }
 </style>
 </head>
 <body>
+<div class="page">
 
-<header>
-  <h1>🎯 Tracker Bonus Q2 2026 — NA</h1>
-  <div class="meta">
-    <div id="lastUpdateDisplay">—</div>
-    <div>Jour Q2 : <strong id="dayDisplay">—</strong> / 91</div>
-  </div>
-</header>
-
-<div class="container">
-
-  <!-- Progress banner -->
-  <div class="progress-banner">
-    <div class="day">
-      <div>Avancement Q2</div>
-      <strong id="q2Pct">—</strong>
+  <!-- HEADER -->
+  <div class="header">
+    <div>
+      <h1>🏠 Suivi Bonus Q2 2026 — Area NA</h1>
+      <p>AM + SM Team · Région NA · Net eGMV au pace de l'area</p>
+      <span class="last-update" id="last-update">Dernière mise à jour : —</span>
     </div>
-    <div class="divider"></div>
-    <div class="pace-bar-wrap">
-      <label>Pace Existing <span id="paceExLabel"></span></label>
-      <div class="pace-bar"><div class="pace-bar-fill" id="paceExBar" style="background: var(--blue);"></div></div>
-    </div>
-    <div class="divider"></div>
-    <div class="pace-bar-wrap">
-      <label>Pace NLP <span id="paceNlpLabel"></span></label>
-      <div class="pace-bar"><div class="pace-bar-fill" id="paceNlpBar" style="background: var(--orange);"></div></div>
+    <div class="date-badge">
+      <strong id="today-label">—</strong>
+      <span>Avril 100% écoulé</span><br>
+      <span id="mai-progress">Mai en cours</span>
     </div>
   </div>
 
-  <!-- AMs Existing -->
-  <div class="section">
-    <h2>Account Managers — Existing</h2>
-    <div class="grid grid-2" id="amsExistingGrid"></div>
+  <!-- MONTHLY TARGETS -->
+  <p class="section-label">Répartition mensuelle de la target area NA · Total Q2 : 4 323 792 €</p>
+  <div class="months-grid">
+    <div class="month-card">
+      <div class="label">Avril</div>
+      <div class="amount">1 295 051 €</div>
+      <div class="pct">30,0% du Q2</div>
+      <div class="bar-wrap"><div class="bar-fill" style="width:100%;background:var(--teal)"></div></div>
+      <div class="status">✅ Mois terminé</div>
+    </div>
+    <div class="month-card">
+      <div class="label">Mai ⚡</div>
+      <div class="amount">1 330 450 €</div>
+      <div class="pct">30,8% du Q2</div>
+      <div class="bar-wrap"><div class="bar-fill" id="mai-bar" style="background:var(--blue)"></div></div>
+      <div class="status" id="mai-status">En cours...</div>
+    </div>
+    <div class="month-card">
+      <div class="label">Juin</div>
+      <div class="amount">1 698 291 €</div>
+      <div class="pct">39,3% du Q2</div>
+      <div class="bar-wrap"><div class="bar-fill" style="width:0%;background:var(--navy)"></div></div>
+      <div class="status">À venir</div>
+    </div>
   </div>
 
-  <!-- AMs NLP -->
-  <div class="section">
-    <h2>Account Managers — NLP</h2>
-    <div class="grid grid-2" id="amsNlpGrid"></div>
+  <!-- TABS -->
+  <div class="tabs">
+    <div class="tab active" onclick="switchTab('existing')">📦 Existing Properties (AM)</div>
+    <div class="tab" onclick="switchTab('nlp')">🆕 NLP — AM + SM</div>
+    <div class="tab" onclick="switchTab('evolution')">📈 Évolution hebdomadaire</div>
   </div>
 
-  <!-- SMs -->
-  <div class="section">
-    <h2>Sales Managers — Properties & eGMV</h2>
-    <div id="smsGrid"></div>
+  <!-- EXISTING PANEL -->
+  <div class="panel active" id="panel-existing">
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Account Manager</th>
+            <th>Target Q2</th>
+            <th>Pace attendu<br><span style="font-size:10px;opacity:.7;text-transform:none">au jour J</span></th>
+            <th>Net eGMV actuel</th>
+            <th>% vs Target</th>
+            <th>Achievement vs Pace</th>
+          </tr>
+        </thead>
+        <tbody id="existing-tbody"></tbody>
+      </table>
+    </div>
+    <div class="legend">
+      <div class="legend-item"><div class="dot" style="background:var(--red)"></div> Retard &gt;15%</div>
+      <div class="legend-item"><div class="dot" style="background:var(--amber)"></div> Légèrement en retard</div>
+      <div class="legend-item"><div class="dot" style="background:var(--teal)"></div> En avance ✅</div>
+    </div>
+    <p class="footer-note" id="existing-footnote"></p>
   </div>
 
-  <!-- History -->
-  <div class="section">
-    <h2>Historique snapshots</h2>
-    <div class="history-section" id="historySection"></div>
+  <!-- NLP PANEL -->
+  <div class="panel" id="panel-nlp">
+
+    <!-- EXPLAINER -->
+    <div class="nlp-explainer">
+      <div class="nlp-explainer-icon">📐</div>
+      <div>
+        <h3>Courbe NLP : progression exponentielle (back-loaded)</h3>
+        <p>Le Net eGMV des nouvelles propriétés s'accumule lentement en début de trimestre, puis accélère fortement. Modèle exponentiel calibré <strong>k = 1.5</strong>.<br>
+        Repères : <strong>J41 ≈ 27%</strong> · <strong>J68 ≈ 59%</strong> · J91 = 100% (benchmark Holidu).</p>
+        <p class="ref">Source : slide interne Holidu "Net eGMV from NLP Q1 2025"</p>
+      </div>
+    </div>
+
+    <!-- CURVE CANVAS -->
+    <div class="curve-wrap">
+      <h3>🔵 Courbe de pace NLP théorique Q2 — Position d'aujourd'hui (🔵)</h3>
+      <canvas id="nlpCurve" height="240"></canvas>
+    </div>
+
+    <!-- AM NLP SECTION -->
+    <div class="section-divider am-section-divider">
+      <div class="stick"></div>
+      <div>
+        <div class="title">🆕 Account Managers — NLP eGMV</div>
+        <div class="sub">Courbe exponentielle (J/91)² · données Looker NA</div>
+      </div>
+    </div>
+
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Account Manager</th>
+            <th>Target NLP Q2</th>
+            <th>Pace attendu<br><span style="font-size:10px;opacity:.7;text-transform:none">courbe expo</span></th>
+            <th>Net eGMV actuel</th>
+            <th>% vs Target</th>
+            <th>Achievement vs Pace</th>
+          </tr>
+        </thead>
+        <tbody id="nlp-tbody"></tbody>
+      </table>
+    </div>
+
+    <!-- SM NLP SECTION -->
+    <div class="section-divider">
+      <div class="stick"></div>
+      <div>
+        <div class="title">🧑‍💼 Sales Managers — Properties + NLP eGMV</div>
+        <div class="sub">Targets et achievement individuels · Mathieu Henery exclu</div>
+      </div>
+    </div>
+
+    <!-- SM PROPERTIES TABLE -->
+    <p class="section-label" style="margin-top:8px;">📋 Sales Managers — Nombre de propriétés signées <span style="text-transform:none;font-weight:400;color:#6b7280">· pace linéaire par mois (target individuel par mois)</span></p>
+    <div class="table-wrap">
+      <table>
+        <thead class="sm-thead">
+          <tr>
+            <th>Sales Manager</th>
+            <th>Target Q2<br><span style="font-size:10px;opacity:.7;text-transform:none">avr / mai / juin</span></th>
+            <th>Pace attendu<br><span style="font-size:10px;opacity:.7;text-transform:none">au jour J</span></th>
+            <th>Properties actuelles</th>
+            <th>% Target</th>
+            <th>Achievement vs Pace</th>
+          </tr>
+        </thead>
+        <tbody id="sm-props-tbody"></tbody>
+      </table>
+    </div>
+
+    <!-- SM EGMV TABLE -->
+    <p class="section-label" style="margin-top:8px;">💶 Sales Managers — Net eGMV NLP</p>
+    <div class="table-wrap">
+      <table>
+        <thead class="sm-thead">
+          <tr>
+            <th>Sales Manager</th>
+            <th>Target eGMV Q2</th>
+            <th>Pace attendu<br><span style="font-size:10px;opacity:.7;text-transform:none">courbe expo</span></th>
+            <th>Net eGMV actuel</th>
+            <th>% vs Target</th>
+            <th>Achievement vs Pace</th>
+          </tr>
+        </thead>
+        <tbody id="sm-egmv-tbody"></tbody>
+      </table>
+    </div>
+
+    <div class="legend">
+      <div class="legend-item"><div class="dot" style="background:var(--red)"></div> Retard &gt;15%</div>
+      <div class="legend-item"><div class="dot" style="background:var(--amber)"></div> Légèrement en retard</div>
+      <div class="legend-item"><div class="dot" style="background:var(--teal)"></div> En avance ✅</div>
+    </div>
+    <p class="footer-note" id="nlp-footnote"></p>
+  </div>
+
+  <!-- EVOLUTION PANEL -->
+  <div class="panel" id="panel-evolution">
+    <div class="nlp-explainer" style="background:#fef9e7;border-color:#f0d878;">
+      <div class="nlp-explainer-icon">📸</div>
+      <div>
+        <h3 style="color:#7a5800">Snapshot hebdomadaire — chaque mercredi à 8h</h3>
+        <p style="color:#7a5800">Suivez l'écart en % vs le pace attendu de chaque AM, semaine après semaine.</p>
+      </div>
+    </div>
+
+    <div class="chart-wrap">
+      <h3>📦 Existing Properties — Écart vs pace (%)</h3>
+      <p class="subtitle">0% = au pace · positif = en avance · négatif = en retard</p>
+      <div class="chart-canvas"><canvas id="chart-existing"></canvas></div>
+    </div>
+
+    <div class="chart-wrap">
+      <h3>🆕 NLP AM — Écart vs pace (%)</h3>
+      <p class="subtitle">0% = au pace · positif = en avance · négatif = en retard</p>
+      <div class="chart-canvas"><canvas id="chart-nlp"></canvas></div>
+    </div>
+
+    <div class="snapshot-table-wrap" id="snapshot-table-existing-wrap">
+      <h3>📦 Existing — Historique des snapshots (écart vs pace)</h3>
+      <div style="overflow-x:auto"><table class="snapshot-table" id="snapshot-table-existing"></table></div>
+    </div>
+
+    <div class="snapshot-table-wrap" id="snapshot-table-nlp-wrap">
+      <h3>🆕 NLP AM — Historique des snapshots (écart vs pace)</h3>
+      <div style="overflow-x:auto"><table class="snapshot-table" id="snapshot-table-nlp"></table></div>
+    </div>
+
+    <div id="empty-evolution" class="empty-state" style="display:none;">
+      <strong>Pas encore de snapshot hebdomadaire</strong>
+      Le premier snapshot sera pris mercredi prochain à 8h. Les données s'accumuleront chaque semaine ici.
+    </div>
   </div>
 
 </div>
 
 <script>
-// ─── DATA ─────────────────────────────────────────────────────────────────────
+// ─── CONFIG ───────────────────────────────────────────────────────────────────
+const AREA_TARGETS = { avril: 1295051, mai: 1330450, juin: 1698291 };
+const TOTAL_Q2 = AREA_TARGETS.avril + AREA_TARGETS.mai + AREA_TARGETS.juin;
+const Q2_START = new Date('2026-04-01');
+const TODAY = new Date();
+const LAST_UPDATE = '2026-06-01T08:00:00';
+const Q2_DAYS = 91;
 
-const LAST_UPDATE = '2026-06-01T00:00:00';
-
-const AMS_EXISTING = [
-  { name: 'M. Braz',       email: 'mariana.braz',       egmv: 713997, target: 978432 },
-  { name: 'R. Clémenceau', email: 'remi.clemenceau',    egmv: 588026, target: 857518 },
-  { name: 'A. Dicharry',   email: 'amandine.dicharry',  egmv: 575518, target: 934219 },
-  { name: 'L. Millan',     email: 'laetitia.millan',    egmv: 542737, target: 1041981 },
-];
-
-const AMS_NLP = [
-  { name: 'L. Millan',     email: 'laetitia.millan',    egmv: 79389,  target: 91490 },
-  { name: 'R. Clémenceau', email: 'remi.clemenceau',    egmv: 62614,  target: 108244 },
-  { name: 'A. Dicharry',   email: 'amandine.dicharry',  egmv: 58740,  target: 157845 },
-  { name: 'M. Braz',       email: 'mariana.braz',       egmv: 70439,  target: 154060 },
-];
-
-const SMS = [
-  { name: 'J. Ricbourg',    email: 'jade.ricbourg',          propsActual: 71,  propsTarget: 59,  egmvActual: 51070, egmvTarget: 91452, propsMonthly: [22, 15, 22] },
-  { name: 'A. Monnier',     email: 'arthur.monnier',         propsActual: 80,  propsTarget: 75,  egmvActual: 57367, egmvTarget: 75525, propsMonthly: [29, 25, 21] },
-  { name: 'N. Sellier',     email: 'naomi.sellier',          propsActual: 82,  propsTarget: 77,  egmvActual: 68949, egmvTarget: 77101, propsMonthly: [29, 18, 30] },
-  { name: 'J. Bouchereau',  email: 'jonathan.bouchereau',    propsActual: 24,  propsTarget: 37,  egmvActual: 20677, egmvTarget: 87023, propsMonthly: [9, 14, 14] },
-  { name: 'G. Sibrac',      email: 'gauthier.sibrac',        propsActual: 32,  propsTarget: 55,  egmvActual: 13541, egmvTarget: 65597, propsMonthly: [20, 15, 20] },
-  { name: 'C. Doucet',      email: 'clement.doucet',         propsActual: 11,  propsTarget: 35,  egmvActual: 1614,  egmvTarget: 28192, propsMonthly: [0, 12, 23] },
-  { name: 'E. Blond',       email: 'elisa.blond',            propsActual: 13,  propsTarget: 42,  egmvActual: 17757, egmvTarget: 68568, propsMonthly: [12, 9, 21] },
-];
-
-const HISTORY = [
-];
-
-// ─── PACE CALCULATION ─────────────────────────────────────────────────────────
-
-function calcDayQ2() {
-  const now = new Date();
-  const q2Start = new Date('2026-04-01');
-  const diff = Math.floor((now - q2Start) / 86400000) + 1;
-  return Math.min(Math.max(diff, 1), 91);
+function daysElapsedQ2(date) {
+  const d = date || TODAY;
+  // 1-indexed : J1 = 1 avril, J91 = 30 juin (aligne avec PACA)
+  const diff = Math.floor((d - Q2_START) / (1000 * 60 * 60 * 24)) + 1;
+  return Math.min(Math.max(diff, 1), Q2_DAYS);
 }
 
-function calcPaceExisting(dayQ2) {
-  const PCT_AVRIL = 0.2994, PCT_MAI = 0.3077, PCT_JUIN = 0.3927;
+// Convertit un numéro de jour Q2 en date réelle
+function dateForJ(j) {
+  const d = new Date(Q2_START);
+  d.setDate(d.getDate() + (j - 1));
+  return d;
+}
+function fmtJDate(j) {
+  const d = dateForJ(j);
+  return new Intl.DateTimeFormat('fr-FR', { day: 'numeric', month: 'short' }).format(d);
+}
+
+const PCT_AVRIL = AREA_TARGETS.avril / TOTAL_Q2;
+const PCT_MAI   = AREA_TARGETS.mai   / TOTAL_Q2;
+const PCT_JUIN  = AREA_TARGETS.juin  / TOTAL_Q2;
+
+function existingPace(date) {
+  const dayQ2 = daysElapsedQ2(date);
   if (dayQ2 <= 30) return PCT_AVRIL * (dayQ2 / 30);
   if (dayQ2 <= 61) return PCT_AVRIL + PCT_MAI * ((dayQ2 - 30) / 31);
   return PCT_AVRIL + PCT_MAI + PCT_JUIN * ((dayQ2 - 61) / 30);
 }
 
-function calcPaceNlp(dayQ2) {
-  return (Math.exp(1.5 * dayQ2 / 91) - 1) / (Math.exp(1.5) - 1);
+// NLP pace : courbe exponentielle calibrée k=1.5 (Holidu)
+// Repères : J41 ≈ 27%, J68 ≈ 59%, J91 = 100%
+function nlpPace(dayQ2) {
+  const k = 1.5;
+  const t = dayQ2 / Q2_DAYS;
+  return (Math.exp(k * t) - 1) / (Math.exp(k) - 1);
 }
 
-// ─── HELPERS ──────────────────────────────────────────────────────────────────
+// ─── DATA — actualisée quotidiennement à 8h ──────────────────────────────────
+const AMS_EXISTING = [
+  { name: 'M. Braz',        email: 'mariana.braz',      target: 978432,  egmv: 713997 },
+  { name: 'R. Clemenceau',  email: 'remi.clemenceau',   target: 857518,  egmv: 588026 },
+  { name: 'A. Dicharry',    email: 'amandine.dicharry', target: 934219,  egmv: 575518 },
+  { name: 'L. Millan',      email: 'laetitia.millan',   target: 1041981, egmv: 542737 },
+];
 
-function fmtEur(n) {
-  if (n >= 1000000) return '€' + (n/1000000).toFixed(2) + 'M';
-  if (n >= 1000) return '€' + Math.round(n/1000) + 'k';
-  return '€' + n;
+const AMS_NLP = [
+  { name: 'L. Millan',      email: 'laetitia.millan',   target: 91490,  egmv: 79389 },
+  { name: 'R. Clemenceau',  email: 'remi.clemenceau',   target: 108244, egmv: 62614 },
+  { name: 'A. Dicharry',    email: 'amandine.dicharry', target: 157845, egmv: 58740 },
+  { name: 'M. Braz',        email: 'mariana.braz',      target: 154060, egmv: 70439 },
+];
+
+// SM data — Focus Area FR Nouvelle-Aquitaine
+// propsMonthly = [avril, mai, juin] · Loic Kouamé hors NA · Mathieu Henery exclu
+// Triés par achievement Properties % décroissant (propsActual / propsTarget)
+const SMS = [
+  { name: 'J. Ricbourg',     email: 'jade.ricbourg',        short: 'J. Ricbourg',   propsTarget: 59, propsActual: 71, propsMonthly: [22, 15, 22], egmvTarget: 91452,  egmvActual: 51070 },
+  { name: 'A. Monnier',      email: 'arthur.monnier',       short: 'A. Monnier',    propsTarget: 75, propsActual: 80, propsMonthly: [29, 25, 21], egmvTarget: 75525,  egmvActual: 57367 },
+  { name: 'N. Sellier',      email: 'naomi.sellier',        short: 'N. Sellier',    propsTarget: 77, propsActual: 82, propsMonthly: [29, 18, 30], egmvTarget: 77101,  egmvActual: 68949 },
+  { name: 'J. Bouchereau',   email: 'jonathan.bouchereau',  short: 'J. Bouchereau', propsTarget: 37, propsActual: 24, propsMonthly: [9, 14, 14],  egmvTarget: 87023,  egmvActual: 20677 },
+  { name: 'G. Sibrac',       email: 'gauthier.sibrac',      short: 'G. Sibrac',     propsTarget: 55, propsActual: 32, propsMonthly: [20, 15, 20], egmvTarget: 65597,  egmvActual: 13541 },
+  { name: 'C. Doucet',       email: 'clement.doucet',       short: 'C. Doucet',     propsTarget: 35, propsActual: 11, propsMonthly: [0, 12, 23],  egmvTarget: 28192,  egmvActual: 1614 },
+  { name: 'E. Blond',        email: 'elisa.blond',          short: 'E. Blond',      propsTarget: 42, propsActual: 13, propsMonthly: [12, 9, 21],  egmvTarget: 68568,  egmvActual: 17757 },
+];
+
+// Properties pace : linéaire par mois selon les targets individuels (M1=avril, M2=mai, M3=juin)
+function propsPace(sm, date) {
+  const dayQ2 = daysElapsedQ2(date); // 1-indexed: J1=1er avr, J30=30 avr, J31=1er mai, J61=31 mai, J91=30 juin
+  const [m1, m2, m3] = sm.propsMonthly;
+  if (dayQ2 <= 30) return m1 * (dayQ2 / 30);
+  if (dayQ2 <= 61) return m1 + m2 * ((dayQ2 - 30) / 31);
+  return m1 + m2 + m3 * ((dayQ2 - 61) / 30);
 }
 
-function pct(a, b) { return b > 0 ? Math.round(a / b * 100) : 0; }
+const SM_COLORS = ['#6366f1','#f59e0b','#ec4899','#14b8a6','#8b5cf6','#f97316','#06b6d4','#dc2626'];
+const AM_COLORS = ['#0ea5e9','#a855f7','#f43f5e','#22c55e'];
 
-function deltaBadge(d) {
-  if (d > 0) return `<span class="delta-badge delta-pos">+${d}%</span>`;
-  if (d < 0) return `<span class="delta-badge delta-neg">${d}%</span>`;
-  return `<span class="delta-badge delta-neu">0%</span>`;
+const HISTORY = [];
+
+// ─── UTILS ────────────────────────────────────────────────────────────────────
+function fmt(n) { return new Intl.NumberFormat('fr-FR', { style: 'currency', currency: 'EUR', maximumFractionDigits: 0 }).format(n); }
+function fmtDate(d) { return new Intl.DateTimeFormat('fr-FR', { day: '2-digit', month: '2-digit' }).format(new Date(d)); }
+function badgeClass(dp) { if (dp >= 5) return 'badge-advance'; if (dp >= -15) return 'badge-ok'; return 'badge-retard'; }
+function badgeEmoji(dp) { if (dp >= 5) return '✅'; if (dp >= -15) return '⚠️'; return '🔴'; }
+function deltaClass(dp) { if (dp >= 5) return 'delta-positive'; if (dp >= -15) return 'delta-negative-mild'; return 'delta-negative-strong'; }
+
+function renderRow(am, paceRatio) {
+  const paceAttendu = am.target * paceRatio;
+  const delta = am.egmv - paceAttendu;
+  const deltaPct = paceAttendu ? (delta / paceAttendu) * 100 : 0;
+  const vsTargetPct = Math.round((am.egmv / am.target) * 100);
+  const sign = delta >= 0 ? '+' : '';
+  const bc = badgeClass(deltaPct);
+  const emoji = badgeEmoji(deltaPct);
+  return `<tr>
+    <td>${am.name}<span class="am-name-sub">${am.email}@holidu.com</span></td>
+    <td class="mono">${fmt(am.target)}</td>
+    <td class="mono">${fmt(Math.round(paceAttendu))}</td>
+    <td class="mono">${fmt(am.egmv)}</td>
+    <td><span class="badge badge-pct">${vsTargetPct}%</span></td>
+    <td><span class="badge ${bc}">${sign}${fmt(Math.round(delta))}<span>${sign}${Math.round(deltaPct)}% vs pace ${emoji}</span></span></td>
+  </tr>`;
 }
 
-function barColor(completion, pace) {
-  const ratio = completion / (pace * 100);
-  if (ratio >= 1.05) return 'var(--green)';
-  if (ratio >= 0.9) return 'var(--orange)';
-  return 'var(--red)';
+function renderSmPropsRow(sm) {
+  const pace = propsPace(sm);
+  const delta = sm.propsActual - pace;
+  const deltaPct = pace ? (delta / pace) * 100 : 0;
+  const pct = Math.round((sm.propsActual / sm.propsTarget) * 100);
+  const sign = delta >= 0 ? '+' : '';
+  const bc = badgeClass(deltaPct);
+  const emoji = badgeEmoji(deltaPct);
+  const monthlyStr = `${sm.propsTarget} <span style="font-size:10px;color:#9ca3af">(${sm.propsMonthly.join('/')})</span>`;
+  return `<tr>
+    <td>${sm.name}<span class="am-name-sub">${sm.email}@holidu.com</span></td>
+    <td class="mono">${monthlyStr}</td>
+    <td class="mono">${pace.toFixed(1)}</td>
+    <td class="mono"><strong>${sm.propsActual}</strong></td>
+    <td><span class="badge badge-pct">${pct}%</span></td>
+    <td><span class="badge ${bc}">${sign}${delta.toFixed(1)}<span>${sign}${Math.round(deltaPct)}% vs pace ${emoji}</span></span></td>
+  </tr>`;
 }
 
-function dotColor(v) {
-  if (v >= 25) return 'var(--green)';
-  if (v >= 15) return 'var(--orange)';
-  return 'var(--red)';
+function renderSmEgmvRow(sm, paceRatio) {
+  const paceAttendu = sm.egmvTarget * paceRatio;
+  const delta = sm.egmvActual - paceAttendu;
+  const deltaPct = paceAttendu ? (delta / paceAttendu) * 100 : 0;
+  const vsTargetPct = Math.round((sm.egmvActual / sm.egmvTarget) * 100);
+  const sign = delta >= 0 ? '+' : '';
+  const bc = badgeClass(deltaPct);
+  const emoji = badgeEmoji(deltaPct);
+  return `<tr>
+    <td>${sm.name}<span class="am-name-sub">${sm.email}@holidu.com</span></td>
+    <td class="mono">${fmt(sm.egmvTarget)}</td>
+    <td class="mono">${fmt(Math.round(paceAttendu))}</td>
+    <td class="mono">${fmt(sm.egmvActual)}</td>
+    <td><span class="badge badge-pct">${vsTargetPct}%</span></td>
+    <td><span class="badge ${bc}">${sign}${fmt(Math.round(delta))}<span>${sign}${Math.round(deltaPct)}% vs pace ${emoji}</span></span></td>
+  </tr>`;
 }
 
-// ─── RENDER ───────────────────────────────────────────────────────────────────
+// ─── CURVE CANVAS ──────────────────────────────────────────────────────────
+function drawCurve() {
+  const canvas = document.getElementById('nlpCurve');
+  if (!canvas) return;
+  const dayQ2 = daysElapsedQ2();
+  const pr = nlpPace(dayQ2);
+  const W = canvas.parentElement.clientWidth - 40;
+  const H = 240;
+  const dpr = window.devicePixelRatio || 1;
+  canvas.width = W * dpr; canvas.height = H * dpr;
+  canvas.style.width = W + 'px'; canvas.style.height = H + 'px';
+  const ctx = canvas.getContext('2d');
+  ctx.scale(dpr, dpr);
 
-function renderAmCard(am, pace) {
-  const completionPct = pct(am.egmv, am.target);
-  const expected = am.target * pace;
-  const delta = expected > 0 ? Math.round(((am.egmv - expected) / expected) * 100) : 0;
-  const color = barColor(completionPct, pace);
-  const paceMarkerPct = Math.min(pace * 100, 100);
+  const P = { top: 16, right: 16, bottom: 54, left: 52 };
+  const cW = W - P.left - P.right, cH = H - P.top - P.bottom;
 
-  return `
-    <div class="card">
-      <div class="name">${am.name} ${deltaBadge(delta)}</div>
-      <div class="metric-row">
-        <span class="metric-label">eGMV actuel</span>
-        <span class="metric-value">${fmtEur(am.egmv)}</span>
-      </div>
-      <div class="metric-row">
-        <span class="metric-label">Objectif Q2</span>
-        <span class="metric-value">${fmtEur(am.target)}</span>
-      </div>
-      <div class="bar-wrap">
-        <label><span>Completion</span><span>${completionPct}%</span></label>
-        <div class="bar">
-          <div class="bar-fill" style="width:${Math.min(completionPct, 100)}%; background:${color};"></div>
-          <div class="bar-pace" style="left:${paceMarkerPct}%;"></div>
-        </div>
-      </div>
-    </div>`;
-}
+  ctx.fillStyle = '#fff'; ctx.fillRect(0, 0, W, H);
 
-function renderSmCard(sm, rank) {
-  const propsPct = pct(sm.propsActual, sm.propsTarget);
-  const egmvPct = pct(sm.egmvActual, sm.egmvTarget);
-  const isTop = rank <= 3;
-  const propsColor = propsPct >= 100 ? 'var(--green)' : propsPct >= 70 ? 'var(--orange)' : 'var(--red)';
-  const dots = sm.propsMonthly.map(v => `<div class="dot" style="background:${dotColor(v)}" title="${v} props"></div>`).join('');
+  // grid
+  [0, 0.25, 0.5, 0.75, 1].forEach(y => {
+    const py = P.top + cH * (1 - y);
+    ctx.strokeStyle = '#f1f5f9'; ctx.lineWidth = 1;
+    ctx.beginPath(); ctx.moveTo(P.left, py); ctx.lineTo(P.left + cW, py); ctx.stroke();
+    ctx.fillStyle = '#9ca3af'; ctx.font = '10px -apple-system,sans-serif'; ctx.textAlign = 'right';
+    ctx.fillText((y * 100).toFixed(0) + '%', P.left - 6, py + 4);
+  });
 
-  return `
-    <div class="sm-card" style="margin-bottom:8px;">
-      <div class="sm-rank ${isTop ? 'top' : ''}">${rank}</div>
-      <div>
-        <div class="sm-name">${sm.name}</div>
-        <div class="sm-stats">${sm.propsActual} / ${sm.propsTarget} props · eGMV ${fmtEur(sm.egmvActual)} / ${fmtEur(sm.egmvTarget)}</div>
-        <div class="monthly-dots" title="Ajouts Apr/Mai/Jun">${dots}</div>
-      </div>
-      <div class="sm-right">
-        <div class="sm-pct" style="color:${propsColor}">${propsPct}%</div>
-        <div class="sm-egmv-pct">eGMV ${egmvPct}%</div>
-      </div>
-      <div class="sm-bar" style="grid-column:2/-1;">
-        <div class="sm-bar-fill" style="width:${Math.min(propsPct,100)}%; background:${propsColor};"></div>
-      </div>
-    </div>`;
-}
+  // x labels — J number + date Q2
+  [1, 15, 30, 45, 60, 68, 75, 91].forEach(d => {
+    const px = P.left + (d / 91) * cW;
+    const isRef = d === 68;
+    ctx.fillStyle = isRef ? '#10b981' : '#9ca3af';
+    ctx.font = (isRef ? 'bold ' : '') + '10px -apple-system,sans-serif';
+    ctx.textAlign = 'center';
+    ctx.fillText('J' + d, px, H - P.bottom + 14);
+    ctx.fillStyle = isRef ? '#10b981' : '#6b7280';
+    ctx.font = '9px -apple-system,sans-serif';
+    ctx.fillText(fmtJDate(d), px, H - P.bottom + 28);
+  });
 
-function renderHistory(history, paceExFn, paceNlpFn) {
-  if (!history || history.length === 0) {
-    return '<div class="history-empty">Aucun snapshot encore. Le premier sera ajouté le prochain mercredi.</div>';
+  // expo curve
+  ctx.beginPath(); ctx.strokeStyle = '#1e3a5f'; ctx.lineWidth = 2.5;
+  for (let d = 0; d <= 91; d++) {
+    const x = P.left + (d / 91) * cW, y = P.top + cH * (1 - nlpPace(d));
+    d === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y);
   }
-  return history.map(snap => {
-    const existingChips = Object.entries(snap.existing || {}).map(([k, v]) => {
-      const badge = v > 0 ? `<span class="delta-badge delta-pos" style="margin-left:2px">+${v}%</span>`
-                          : v < 0 ? `<span class="delta-badge delta-neg" style="margin-left:2px">${v}%</span>`
-                          : '';
-      return `<span class="snapshot-chip">${k.split('.')[0]} ${badge}</span>`;
-    }).join('');
-    const nlpChips = Object.entries(snap.nlp || {}).map(([k, v]) => {
-      const badge = v > 0 ? `<span class="delta-badge delta-pos" style="margin-left:2px">+${v}%</span>`
-                          : v < 0 ? `<span class="delta-badge delta-neg" style="margin-left:2px">${v}%</span>`
-                          : '';
-      return `<span class="snapshot-chip">${k.split('.')[0]} ${badge}</span>`;
-    }).join('');
-    return `
-      <div class="snapshot-row">
-        <div class="snapshot-date">${snap.date}</div>
-        <div>
-          <div style="font-size:11px;color:var(--text-muted);margin-bottom:4px;">Existing</div>
-          <div class="snapshot-data">${existingChips}</div>
-          <div style="font-size:11px;color:var(--text-muted);margin:6px 0 4px">NLP</div>
-          <div class="snapshot-data">${nlpChips}</div>
-        </div>
-      </div>`;
-  }).join('');
+  ctx.stroke();
+
+  // J68 reference — 59% (modèle k=1.5)
+  const x68 = P.left + (68 / 91) * cW, y59 = P.top + cH * (1 - 0.59);
+  ctx.setLineDash([5, 4]); ctx.strokeStyle = '#10b981'; ctx.lineWidth = 1.5;
+  ctx.beginPath(); ctx.moveTo(P.left, y59); ctx.lineTo(x68, y59); ctx.stroke();
+  ctx.beginPath(); ctx.moveTo(x68, P.top); ctx.lineTo(x68, P.top + cH); ctx.stroke();
+  ctx.setLineDash([]);
+  ctx.fillStyle = '#10b981'; ctx.font = 'bold 9px -apple-system,sans-serif'; ctx.textAlign = 'left';
+  const labX68 = x68 + 4 > P.left + cW - 130 ? x68 - 132 : x68 + 4;
+  ctx.fillText('59% à J68 = très bon (Holidu)', labX68, y59 - 4);
+
+  // TODAY (bleu)
+  const xt = P.left + (dayQ2 / 91) * cW, yt = P.top + cH * (1 - pr);
+  ctx.strokeStyle = 'rgba(59,130,246,0.4)'; ctx.lineWidth = 1.5; ctx.setLineDash([3, 3]);
+  ctx.beginPath(); ctx.moveTo(xt, P.top); ctx.lineTo(xt, P.top + cH); ctx.stroke();
+  ctx.setLineDash([]);
+  ctx.beginPath(); ctx.arc(xt, yt, 6, 0, Math.PI * 2);
+  ctx.fillStyle = '#3b82f6'; ctx.fill();
+  ctx.strokeStyle = '#fff'; ctx.lineWidth = 2; ctx.stroke();
+  const lx = xt + 10 > P.left + cW - 95 ? xt - 100 : xt + 10;
+  ctx.fillStyle = '#3b82f6'; ctx.font = 'bold 9.5px -apple-system,sans-serif'; ctx.textAlign = 'left';
+  ctx.fillText('Auj. J' + dayQ2, lx, yt - 7);
+  ctx.fillText('Pace=' + (pr * 100).toFixed(1) + '%', lx, yt + 7);
+
+  // Ronds SM / carrés AM retirés — courbe épurée
+
+  // axes
+  ctx.strokeStyle = '#e5e7eb'; ctx.lineWidth = 1;
+  ctx.beginPath(); ctx.moveTo(P.left, P.top); ctx.lineTo(P.left, P.top + cH); ctx.lineTo(P.left + cW, P.top + cH); ctx.stroke();
+}
+
+// ─── EVOLUTION RENDERING ──────────────────────────────────────────────────────
+const HIST_AM_COLORS = {
+  'mariana.braz':     '#E24B4A',
+  'remi.clemenceau':  '#378add',
+  'amandine.dicharry':'#BA7517',
+  'laetitia.millan':  '#1D9E75',
+};
+
+function buildSnapshotTable(group, ams) {
+  const tbody = document.getElementById(`snapshot-table-${group}`);
+  if (HISTORY.length === 0) return;
+  let html = '<thead><tr><th>AM</th>';
+  HISTORY.forEach(snap => { html += `<th>${fmtDate(snap.date)}</th>`; });
+  html += '</tr></thead><tbody>';
+  ams.forEach(am => {
+    html += `<tr><td>${am.name}</td>`;
+    HISTORY.forEach(snap => {
+      const dp = snap[group][am.email];
+      if (dp === undefined || dp === null) html += '<td class="delta-cell">—</td>';
+      else { const sign = dp >= 0 ? '+' : ''; html += `<td class="delta-cell ${deltaClass(dp)}">${sign}${Math.round(dp)}%</td>`; }
+    });
+    html += '</tr>';
+  });
+  html += '</tbody>';
+  tbody.innerHTML = html;
+}
+
+function buildChart(canvasId, group, ams) {
+  const ctx = document.getElementById(canvasId).getContext('2d');
+  if (HISTORY.length === 0) return;
+  const labels = HISTORY.map(s => fmtDate(s.date));
+  const datasets = ams.map(am => ({
+    label: am.name,
+    data: HISTORY.map(s => s[group][am.email] ?? null),
+    borderColor: HIST_AM_COLORS[am.email] || '#666',
+    backgroundColor: HIST_AM_COLORS[am.email] || '#666',
+    tension: 0.25, spanGaps: true, pointRadius: 4, borderWidth: 2,
+  }));
+  new Chart(ctx, {
+    type: 'line', data: { labels, datasets },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      plugins: {
+        legend: { position: 'bottom', labels: { font: { size: 11 } } },
+        tooltip: { callbacks: { label: (c) => `${c.dataset.label}: ${c.parsed.y >= 0 ? '+' : ''}${Math.round(c.parsed.y)}% vs pace` } }
+      },
+      scales: {
+        y: { title: { display: true, text: 'Écart vs pace (%)' }, ticks: { callback: (v) => (v >= 0 ? '+' : '') + v + '%' }, grid: { color: (c) => c.tick.value === 0 ? '#999' : '#eee' } },
+        x: { grid: { display: false } }
+      }
+    }
+  });
+}
+
+function renderEvolution() {
+  if (HISTORY.length === 0) {
+    document.getElementById('empty-evolution').style.display = 'block';
+    document.getElementById('snapshot-table-existing-wrap').style.display = 'none';
+    document.getElementById('snapshot-table-nlp-wrap').style.display = 'none';
+    document.querySelectorAll('#panel-evolution .chart-wrap').forEach(el => el.style.display = 'none');
+    return;
+  }
+  buildSnapshotTable('existing', AMS_EXISTING);
+  buildSnapshotTable('nlp', AMS_NLP);
+  buildChart('chart-existing', 'existing', AMS_EXISTING);
+  buildChart('chart-nlp', 'nlp', AMS_NLP);
 }
 
 // ─── INIT ─────────────────────────────────────────────────────────────────────
-
 function init() {
-  const dayQ2 = calcDayQ2();
-  const paceEx = calcPaceExisting(dayQ2);
-  const paceNlp = calcPaceNlp(dayQ2);
-  const q2Pct = Math.round(dayQ2 / 91 * 100);
+  const dayQ2 = daysElapsedQ2();
+  const maiDay = dayQ2 > 30 ? Math.min(dayQ2 - 30, 31) : 0;
+  const paceExisting = existingPace();
+  const paceNLP = nlpPace(dayQ2);
 
-  // Header
-  document.getElementById('lastUpdateDisplay').textContent = 'MàJ : ' + new Date(LAST_UPDATE).toLocaleString('fr-FR', {day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit'});
-  document.getElementById('dayDisplay').textContent = dayQ2;
-  document.getElementById('q2Pct').textContent = q2Pct + '%';
+  document.getElementById('today-label').textContent = TODAY.toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', year: 'numeric' });
+  document.getElementById('mai-progress').textContent = dayQ2 > 30 ? `Mai en cours (j${maiDay}/31)` : 'Mai à venir';
 
-  // Pace bars
-  document.getElementById('paceExBar').style.width = Math.min(paceEx * 100, 100) + '%';
-  document.getElementById('paceExLabel').textContent = Math.round(paceEx * 100) + '%';
-  document.getElementById('paceNlpBar').style.width = Math.min(paceNlp * 100, 100) + '%';
-  document.getElementById('paceNlpLabel').textContent = Math.round(paceNlp * 100) + '%';
+  const lu = new Date(LAST_UPDATE);
+  document.getElementById('last-update').textContent =
+    `Dernière mise à jour : ${lu.toLocaleDateString('fr-FR', { day:'2-digit', month:'2-digit', year:'numeric' })} à ${lu.toLocaleTimeString('fr-FR', { hour:'2-digit', minute:'2-digit' })}`;
 
-  // AM grids
-  document.getElementById('amsExistingGrid').innerHTML = AMS_EXISTING.map(am => renderAmCard(am, paceEx)).join('');
-  document.getElementById('amsNlpGrid').innerHTML = AMS_NLP.map(am => renderAmCard(am, paceNlp)).join('');
+  const maiPct = dayQ2 > 30 ? Math.min(((dayQ2 - 30) / 31) * 100, 100) : 0;
+  document.getElementById('mai-bar').style.width = maiPct + '%';
+  document.getElementById('mai-status').textContent = dayQ2 > 30 ? `⏳ En cours (j${maiDay}/31)` : 'À venir';
 
-  // SM grid
-  document.getElementById('smsGrid').innerHTML = SMS.map((sm, i) => renderSmCard(sm, i + 1)).join('');
+  // Tables
+  document.getElementById('existing-tbody').innerHTML = AMS_EXISTING.map(am => renderRow(am, paceExisting)).join('');
+  document.getElementById('nlp-tbody').innerHTML = AMS_NLP.map(am => renderRow(am, paceNLP)).join('');
+  document.getElementById('sm-props-tbody').innerHTML = SMS.map(renderSmPropsRow).join('');
+  document.getElementById('sm-egmv-tbody').innerHTML = SMS.map(sm => renderSmEgmvRow(sm, paceNLP)).join('');
 
-  // History
-  document.getElementById('historySection').innerHTML = renderHistory(HISTORY, calcPaceExisting, calcPaceNlp);
+  // Footnotes
+  const pctAvril = (PCT_AVRIL * 100).toFixed(1);
+  const pctMaiDay = dayQ2 > 30 ? ((maiDay / 31) * PCT_MAI * 100).toFixed(1) : '0';
+  document.getElementById('existing-footnote').textContent =
+    `Pace = avril 100% (${pctAvril}%) + ${maiDay} jours mai (${maiDay}/31 × ${(PCT_MAI*100).toFixed(1)}% ≈ ${pctMaiDay}%) = ${(paceExisting*100).toFixed(1)}% du Q2 écoulé · données au ${TODAY.toLocaleDateString('fr-FR')}`;
+  document.getElementById('nlp-footnote').textContent =
+    `Pace NLP = courbe expo k=1.5 (Holidu) · Jour ${dayQ2}/91 du Q2 → ${(paceNLP*100).toFixed(1)}% attendu · données au ${TODAY.toLocaleDateString('fr-FR')}`;
+
+  renderEvolution();
+}
+
+function switchTab(tab) {
+  const tabs = ['existing', 'nlp', 'evolution'];
+  document.querySelectorAll('.tab').forEach((t, i) => t.classList.toggle('active', tabs[i] === tab));
+  tabs.forEach(t => document.getElementById('panel-' + t).classList.toggle('active', t === tab));
+  if (tab === 'nlp') setTimeout(drawCurve, 60);
 }
 
 init();
+window.addEventListener('resize', () => { if (document.getElementById('panel-nlp').classList.contains('active')) drawCurve(); });
 </script>
 </body>
 </html>
