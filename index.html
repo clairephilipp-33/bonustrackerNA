@@ -359,7 +359,7 @@ const AREA_TARGETS = { avril: 1295051, mai: 1330450, juin: 1698291 };
 const TOTAL_Q2 = AREA_TARGETS.avril + AREA_TARGETS.mai + AREA_TARGETS.juin;
 const Q2_START = new Date('2026-04-01');
 const TODAY = new Date();
-const LAST_UPDATE = '2026-06-19T06:06:56';
+const LAST_UPDATE = '2026-06-20T06:09:59';
 const Q2_DAYS = 91;
 
 function daysElapsedQ2(date) {
@@ -401,28 +401,28 @@ function nlpPace(dayQ2) {
 
 // ─── DATA — actualisée quotidiennement à 8h ──────────────────────────────────
 const AMS_EXISTING = [
-  { name: 'M. Braz',        email: 'mariana.braz',      target: 978432,  egmv: 971497 },
-  { name: 'R. Clemenceau',  email: 'remi.clemenceau',   target: 857518,  egmv: 777386 },
-  { name: 'A. Dicharry',    email: 'amandine.dicharry', target: 934219,  egmv: 769031 },
-  { name: 'L. Millan',      email: 'laetitia.millan',   target: 1041981, egmv: 690400 },
+  { name: 'M. Braz',        email: 'mariana.braz',      target: 978432,  egmv: 976908 },
+  { name: 'R. Clemenceau',  email: 'remi.clemenceau',   target: 857518,  egmv: 782237 },
+  { name: 'A. Dicharry',    email: 'amandine.dicharry', target: 934219,  egmv: 776357 },
+  { name: 'L. Millan',      email: 'laetitia.millan',   target: 1041981, egmv: 691881 },
 ];
 
 const AMS_NLP = [
-  { name: 'L. Millan',      email: 'laetitia.millan',   target: 91490,  egmv: 121965 },
+  { name: 'L. Millan',      email: 'laetitia.millan',   target: 91490,  egmv: 122887 },
   { name: 'R. Clemenceau',  email: 'remi.clemenceau',   target: 108244, egmv: 116383 },
-  { name: 'A. Dicharry',    email: 'amandine.dicharry', target: 157845, egmv: 111014 },
-  { name: 'M. Braz',        email: 'mariana.braz',      target: 154060, egmv: 139037 },
+  { name: 'A. Dicharry',    email: 'amandine.dicharry', target: 157845, egmv: 111491 },
+  { name: 'M. Braz',        email: 'mariana.braz',      target: 154060, egmv: 140968 },
 ];
 
 // SM data — Focus Area FR Nouvelle-Aquitaine
 // propsMonthly = [avril, mai, juin] · Loic Kouamé hors NA · Mathieu Henery exclu
 // Triés par achievement Properties % décroissant (propsActual / propsTarget)
 const SMS = [
-  { name: 'J. Ricbourg',     email: 'jade.ricbourg',        short: 'J. Ricbourg',   propsTarget: 59, propsActual: 89, propsMonthly: [22, 15, 22], egmvTarget: 91452,  egmvActual: 83700 },
-  { name: 'A. Monnier',      email: 'arthur.monnier',       short: 'A. Monnier',    propsTarget: 75, propsActual: 111, propsMonthly: [29, 25, 21], egmvTarget: 75525,  egmvActual: 91630 },
+  { name: 'J. Ricbourg',     email: 'jade.ricbourg',        short: 'J. Ricbourg',   propsTarget: 59, propsActual: 91, propsMonthly: [22, 15, 22], egmvTarget: 91452,  egmvActual: 84739 },
+  { name: 'A. Monnier',      email: 'arthur.monnier',       short: 'A. Monnier',    propsTarget: 75, propsActual: 111, propsMonthly: [29, 25, 21], egmvTarget: 75525,  egmvActual: 92416 },
   { name: 'N. Sellier',      email: 'naomi.sellier',        short: 'N. Sellier',    propsTarget: 77, propsActual: 92, propsMonthly: [29, 18, 30], egmvTarget: 77101,  egmvActual: 105851 },
-  { name: 'G. Sibrac',       email: 'gauthier.sibrac',      short: 'G. Sibrac',     propsTarget: 55, propsActual: 44, propsMonthly: [20, 15, 20], egmvTarget: 65597,  egmvActual: 39223 },
-  { name: 'J. Bouchereau',   email: 'jonathan.bouchereau',  short: 'J. Bouchereau', propsTarget: 37, propsActual: 25, propsMonthly: [9, 14, 14],  egmvTarget: 87023,  egmvActual: 44091 },
+  { name: 'G. Sibrac',       email: 'gauthier.sibrac',      short: 'G. Sibrac',     propsTarget: 55, propsActual: 49, propsMonthly: [20, 15, 20], egmvTarget: 65597,  egmvActual: 39510 },
+  { name: 'J. Bouchereau',   email: 'jonathan.bouchereau',  short: 'J. Bouchereau', propsTarget: 37, propsActual: 26, propsMonthly: [9, 14, 14],  egmvTarget: 87023,  egmvActual: 44273 },
   { name: 'E. Blond',        email: 'elisa.blond',          short: 'E. Blond',      propsTarget: 42, propsActual: 15, propsMonthly: [12, 9, 21],  egmvTarget: 68568,  egmvActual: 44810 },
   { name: 'C. Doucet',       email: 'clement.doucet',       short: 'C. Doucet',     propsTarget: 35, propsActual: 11, propsMonthly: [0, 12, 23],  egmvTarget: 28192,  egmvActual: 14548 },
 ];
