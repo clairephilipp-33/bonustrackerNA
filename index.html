@@ -152,8 +152,8 @@
     </div>
     <div class="date-badge">
       <strong id="today-label">—</strong>
-      <span>Avril 100% écoulé</span><br>
-      <span id="mai-progress">Mai en cours</span>
+      <span id="badge-line1">—</span><br>
+      <span id="mai-progress">—</span>
     </div>
   </div>
 
@@ -168,18 +168,18 @@
       <div class="status">✅ Mois terminé</div>
     </div>
     <div class="month-card">
-      <div class="label">Mai ⚡</div>
+      <div class="label">Mai</div>
       <div class="amount">1 330 450 €</div>
       <div class="pct">30,8% du Q2</div>
-      <div class="bar-wrap"><div class="bar-fill" id="mai-bar" style="background:var(--blue)"></div></div>
+      <div class="bar-wrap"><div class="bar-fill" id="mai-bar" style="background:var(--teal)"></div></div>
       <div class="status" id="mai-status">En cours...</div>
     </div>
     <div class="month-card">
-      <div class="label">Juin</div>
+      <div class="label">Juin ⚡</div>
       <div class="amount">1 698 291 €</div>
       <div class="pct">39,3% du Q2</div>
-      <div class="bar-wrap"><div class="bar-fill" style="width:0%;background:var(--navy)"></div></div>
-      <div class="status">À venir</div>
+      <div class="bar-wrap"><div class="bar-fill" id="juin-bar" style="width:0%;background:var(--navy)"></div></div>
+      <div class="status" id="juin-status">À venir</div>
     </div>
   </div>
 
@@ -657,19 +657,34 @@ function renderEvolution() {
 function init() {
   const dayQ2 = daysElapsedQ2();
   const maiDay = dayQ2 > 30 ? Math.min(dayQ2 - 30, 31) : 0;
+  const juinDay = dayQ2 > 61 ? Math.min(dayQ2 - 61, 30) : 0;
+  const maiDone = dayQ2 > 61;
+  const juinEnCours = dayQ2 > 61;
   const paceExisting = existingPace();
   const paceNLP = nlpPace(dayQ2);
 
   document.getElementById('today-label').textContent = TODAY.toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', year: 'numeric' });
-  document.getElementById('mai-progress').textContent = dayQ2 > 30 ? `Mai en cours (j${maiDay}/31)` : 'Mai à venir';
+
+  // Badge récapitulatif : mois 100% écoulés + mois en cours
+  document.getElementById('badge-line1').textContent = juinEnCours ? 'Avril + Mai 100% écoulés' : 'Avril 100% écoulé';
+  document.getElementById('mai-progress').textContent = juinEnCours
+    ? `Juin en cours (j${juinDay}/30)`
+    : (dayQ2 > 30 ? `Mai en cours (j${maiDay}/31)` : 'Mai à venir');
 
   const lu = new Date(LAST_UPDATE);
   document.getElementById('last-update').textContent =
     `Dernière mise à jour : ${lu.toLocaleDateString('fr-FR', { day:'2-digit', month:'2-digit', year:'numeric' })} à ${lu.toLocaleTimeString('fr-FR', { hour:'2-digit', minute:'2-digit' })}`;
 
-  const maiPct = dayQ2 > 30 ? Math.min(((dayQ2 - 30) / 31) * 100, 100) : 0;
+  // Carte Mai
+  const maiPct = maiDone ? 100 : (dayQ2 > 30 ? Math.min(((dayQ2 - 30) / 31) * 100, 100) : 0);
   document.getElementById('mai-bar').style.width = maiPct + '%';
-  document.getElementById('mai-status').textContent = dayQ2 > 30 ? `⏳ En cours (j${maiDay}/31)` : 'À venir';
+  document.getElementById('mai-status').textContent = maiDone ? '✅ Mois terminé' : (dayQ2 > 30 ? `⏳ En cours (j${maiDay}/31)` : 'À venir');
+
+  // Carte Juin
+  const juinPct = juinEnCours ? Math.min((juinDay / 30) * 100, 100) : 0;
+  document.getElementById('juin-bar').style.width = juinPct + '%';
+  document.getElementById('juin-bar').style.background = juinEnCours ? 'var(--blue)' : 'var(--navy)';
+  document.getElementById('juin-status').textContent = juinEnCours ? `⏳ En cours (j${juinDay}/30)` : 'À venir';
 
   // Tables
   document.getElementById('existing-tbody').innerHTML = AMS_EXISTING.map(am => renderRow(am, paceExisting)).join('');
@@ -680,8 +695,11 @@ function init() {
   // Footnotes
   const pctAvril = (PCT_AVRIL * 100).toFixed(1);
   const pctMaiDay = dayQ2 > 30 ? ((maiDay / 31) * PCT_MAI * 100).toFixed(1) : '0';
+  const paceBreakdown = juinEnCours
+    ? `avril + mai 100% (${((PCT_AVRIL+PCT_MAI)*100).toFixed(1)}%) + ${juinDay} jours juin (${juinDay}/30 × ${(PCT_JUIN*100).toFixed(1)}% ≈ ${((juinDay/30)*PCT_JUIN*100).toFixed(1)}%)`
+    : `avril 100% (${pctAvril}%) + ${maiDay} jours mai (${maiDay}/31 × ${(PCT_MAI*100).toFixed(1)}% ≈ ${pctMaiDay}%)`;
   document.getElementById('existing-footnote').textContent =
-    `Pace = avril 100% (${pctAvril}%) + ${maiDay} jours mai (${maiDay}/31 × ${(PCT_MAI*100).toFixed(1)}% ≈ ${pctMaiDay}%) = ${(paceExisting*100).toFixed(1)}% du Q2 écoulé · données au ${TODAY.toLocaleDateString('fr-FR')}`;
+    `Pace = ${paceBreakdown} = ${(paceExisting*100).toFixed(1)}% du Q2 écoulé · données au ${TODAY.toLocaleDateString('fr-FR')}`;
   document.getElementById('nlp-footnote').textContent =
     `Pace NLP = courbe expo k=1.5 (Holidu) · Jour ${dayQ2}/91 du Q2 → ${(paceNLP*100).toFixed(1)}% attendu · données au ${TODAY.toLocaleDateString('fr-FR')}`;
 
