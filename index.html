@@ -359,7 +359,7 @@ const AREA_TARGETS = { avril: 1295051, mai: 1330450, juin: 1698291 };
 const TOTAL_Q2 = AREA_TARGETS.avril + AREA_TARGETS.mai + AREA_TARGETS.juin;
 const Q2_START = new Date('2026-04-01');
 const TODAY = new Date();
-const LAST_UPDATE = '2026-06-22T08:09:34';
+const LAST_UPDATE = '2026-06-23T21:18:31';
 const Q2_DAYS = 91;
 
 function daysElapsedQ2(date) {
@@ -401,30 +401,30 @@ function nlpPace(dayQ2) {
 
 // ─── DATA — actualisée quotidiennement à 8h ──────────────────────────────────
 const AMS_EXISTING = [
-  { name: 'M. Braz',        email: 'mariana.braz',      target: 978432,  egmv: 997771 },
-  { name: 'R. Clemenceau',  email: 'remi.clemenceau',   target: 857518,  egmv: 798525 },
-  { name: 'A. Dicharry',    email: 'amandine.dicharry', target: 934219,  egmv: 810375 },
-  { name: 'L. Millan',      email: 'laetitia.millan',   target: 1041981, egmv: 716385 },
+  { name: 'M. Braz',        email: 'mariana.braz',      target: 978432,  egmv: 1022997 },
+  { name: 'R. Clemenceau',  email: 'remi.clemenceau',   target: 857518,  egmv: 819381 },
+  { name: 'A. Dicharry',    email: 'amandine.dicharry', target: 934219,  egmv: 826774 },
+  { name: 'L. Millan',      email: 'laetitia.millan',   target: 1041981, egmv: 728605 },
 ];
 
 const AMS_NLP = [
-  { name: 'L. Millan',      email: 'laetitia.millan',   target: 91490,  egmv: 123964 },
-  { name: 'R. Clemenceau',  email: 'remi.clemenceau',   target: 108244, egmv: 124533 },
-  { name: 'A. Dicharry',    email: 'amandine.dicharry', target: 157845, egmv: 117576 },
-  { name: 'M. Braz',        email: 'mariana.braz',      target: 154060, egmv: 147275 },
+  { name: 'L. Millan',      email: 'laetitia.millan',   target: 91490,  egmv: 130329 },
+  { name: 'R. Clemenceau',  email: 'remi.clemenceau',   target: 108244, egmv: 132249 },
+  { name: 'A. Dicharry',    email: 'amandine.dicharry', target: 157845, egmv: 121402 },
+  { name: 'M. Braz',        email: 'mariana.braz',      target: 154060, egmv: 158240 },
 ];
 
 // SM data — Focus Area FR Nouvelle-Aquitaine
 // propsMonthly = [avril, mai, juin] · Loic Kouamé hors NA · Mathieu Henery exclu
 // Triés par achievement Properties % décroissant (propsActual / propsTarget)
 const SMS = [
-  { name: 'J. Ricbourg',     email: 'jade.ricbourg',        short: 'J. Ricbourg',   propsTarget: 59, propsActual: 92, propsMonthly: [22, 15, 22], egmvTarget: 91452,  egmvActual: 86374 },
-  { name: 'A. Monnier',      email: 'arthur.monnier',       short: 'A. Monnier',    propsTarget: 75, propsActual: 111, propsMonthly: [29, 25, 21], egmvTarget: 75525,  egmvActual: 96070 },
-  { name: 'N. Sellier',      email: 'naomi.sellier',        short: 'N. Sellier',    propsTarget: 77, propsActual: 92, propsMonthly: [29, 18, 30], egmvTarget: 77101,  egmvActual: 108791 },
-  { name: 'G. Sibrac',       email: 'gauthier.sibrac',      short: 'G. Sibrac',     propsTarget: 55, propsActual: 50, propsMonthly: [20, 15, 20], egmvTarget: 65597,  egmvActual: 41354 },
-  { name: 'J. Bouchereau',   email: 'jonathan.bouchereau',  short: 'J. Bouchereau', propsTarget: 37, propsActual: 28, propsMonthly: [9, 14, 14],  egmvTarget: 87023,  egmvActual: 50333 },
-  { name: 'E. Blond',        email: 'elisa.blond',          short: 'E. Blond',      propsTarget: 42, propsActual: 17, propsMonthly: [12, 9, 21],  egmvTarget: 68568,  egmvActual: 47927 },
-  { name: 'C. Doucet',       email: 'clement.doucet',       short: 'C. Doucet',     propsTarget: 35, propsActual: 11, propsMonthly: [0, 12, 23],  egmvTarget: 28192,  egmvActual: 15431 },
+  { name: 'J. Ricbourg',     email: 'jade.ricbourg',        short: 'J. Ricbourg',   propsTarget: 59, propsActual: 93, propsMonthly: [22, 15, 22], egmvTarget: 91452,  egmvActual: 91340 },
+  { name: 'A. Monnier',      email: 'arthur.monnier',       short: 'A. Monnier',    propsTarget: 75, propsActual: 112, propsMonthly: [29, 25, 21], egmvTarget: 75525,  egmvActual: 102714 },
+  { name: 'N. Sellier',      email: 'naomi.sellier',        short: 'N. Sellier',    propsTarget: 77, propsActual: 92, propsMonthly: [29, 18, 30], egmvTarget: 77101,  egmvActual: 115118 },
+  { name: 'G. Sibrac',       email: 'gauthier.sibrac',      short: 'G. Sibrac',     propsTarget: 55, propsActual: 50, propsMonthly: [20, 15, 20], egmvTarget: 65597,  egmvActual: 43923 },
+  { name: 'J. Bouchereau',   email: 'jonathan.bouchereau',  short: 'J. Bouchereau', propsTarget: 37, propsActual: 30, propsMonthly: [9, 14, 14],  egmvTarget: 87023,  egmvActual: 52827 },
+  { name: 'E. Blond',        email: 'elisa.blond',          short: 'E. Blond',      propsTarget: 42, propsActual: 17, propsMonthly: [12, 9, 21],  egmvTarget: 68568,  egmvActual: 48390 },
+  { name: 'C. Doucet',       email: 'clement.doucet',       short: 'C. Doucet',     propsTarget: 35, propsActual: 11, propsMonthly: [0, 12, 23],  egmvTarget: 28192,  egmvActual: 15832 },
 ];
 
 // Properties pace : linéaire par mois selon les targets individuels (M1=avril, M2=mai, M3=juin)
