@@ -263,6 +263,22 @@
   <div class="panel active" id="panel-am">
 
     <p class="section-label" style="margin-top:0;">📦 Existing — Net eGMV (AM)</p>
+
+    <!-- EXISTING EXPLAINER -->
+    <div class="nlp-explainer" style="background:#EAF6F8;border-color:#9FE1CB;">
+      <div class="nlp-explainer-icon">📐</div>
+      <div>
+        <h3 style="color:#024251">Courbe pace Existing Q3 — front-loaded (pic été)</h3>
+        <p style="color:#00809D">L'eGMV du parc existant se concentre en haute saison : <strong>juil 42,7% · août 34,0% · sept 23,3%</strong> (distribution area), linéarisé au sein de chaque mois. Inverse du NLP (back-loaded).</p>
+      </div>
+    </div>
+
+    <!-- EXISTING CURVE -->
+    <div class="curve-wrap">
+      <h3>🔵 Courbe de pace Existing Q3 — Position d'aujourd'hui (🔵)</h3>
+      <canvas id="existingCurve" height="240"></canvas>
+    </div>
+
     <div class="table-wrap">
       <table>
         <thead>
@@ -310,24 +326,6 @@
       </div>
     </div>
 
-    <!-- AM PROPERTIES TABLE -->
-    <p class="section-label" style="margin-top:8px;">📋 Account Managers — Nouvelles propriétés <span style="text-transform:none;font-weight:400;color:#6b7280">· pace = distribution area · goal area 357 (somme AM 366, +9 stretch)</span></p>
-    <div class="table-wrap">
-      <table>
-        <thead>
-          <tr>
-            <th>Account Manager</th>
-            <th>Target props Q3</th>
-            <th>Pace attendu<br><span style="font-size:10px;opacity:.7;text-transform:none">au jour J</span></th>
-            <th>Props actuelles</th>
-            <th>% Target</th>
-            <th>Achievement vs Pace</th>
-          </tr>
-        </thead>
-        <tbody id="am-props-tbody"></tbody>
-      </table>
-    </div>
-
     <!-- AM NLP eGMV TABLE -->
     <p class="section-label" style="margin-top:8px;">💶 Account Managers — Net eGMV NLP</p>
     <div class="table-wrap">
@@ -346,6 +344,24 @@
       </table>
     </div>
 
+    <!-- AM NOUVELLES PROPRIÉTÉS — à titre indicatif -->
+    <p class="section-label" style="margin-top:8px;">🆕 Nouvelles propriétés attendues <span style="text-transform:none;font-weight:400;color:#6b7280">· à titre indicatif · goal area 357</span></p>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Account Manager</th>
+            <th>Target props Q3</th>
+            <th>Pace attendu<br><span style="font-size:10px;opacity:.7;text-transform:none">au jour J</span></th>
+            <th>Props actuelles</th>
+            <th>% Target</th>
+            <th>Achievement vs Pace</th>
+          </tr>
+        </thead>
+        <tbody id="am-props-tbody"></tbody>
+      </table>
+    </div>
+
   </div>
 
   <!-- SM PANEL -->
@@ -357,7 +373,6 @@
       <div>
         <h3>Sales Managers — NLP (propriétés + eGMV)</h3>
         <p>Propriétés : pace linéaire par mois selon le split individuel. eGMV NLP : même courbe back-loaded que les AM (26 / 34 / 40, Look 6867 — graphe dans l'onglet AM).</p>
-        <p class="ref">Elisa Blond & Clément Doucet exclus · Mathieu Henery exclu · Loïc Kouamé inclus (NA).</p>
       </div>
     </div>
 
@@ -530,8 +545,8 @@ const AMS_NLP = [
 ];
 
 // SM data — Focus Area FR Nouvelle-Aquitaine · Q3
-// propsMonthly = [juil, août, sept] · Elisa Blond & Clément Doucet retirés · Loïc Kouamé inclus (NA)
-// ⚠️ Loïc : somme mensuelle 13+23+19 = 55 ≠ 54 annoncé au trimestre (à vérifier).
+// propsMonthly = [juil, août, sept]
+// ⚠️ Note QA : une somme mensuelle (13+23+19 = 55) ≠ total trimestre (54) — à vérifier côté source.
 const SMS = [
   { name: 'A. Monnier',      email: 'arthur.monnier',       short: 'A. Monnier',    propsTarget: 74, propsActual: 0, propsMonthly: [28, 27, 19], egmvTarget: 79159,  egmvActual: 0 },
   { name: 'G. Sibrac',       email: 'gauthier.sibrac',      short: 'G. Sibrac',     propsTarget: 59, propsActual: 0, propsMonthly: [28, 12, 19], egmvTarget: 75707,  egmvActual: 0 },
@@ -703,11 +718,19 @@ function asCard(label, goal, pace, actual, currency, extra) {
 }
 
 // ─── CURVE CANVAS ──────────────────────────────────────────────────────────
-function drawCurve() {
-  const canvas = document.getElementById('nlpCurve');
+// Pace existing par numéro de jour (front-loaded, distribution area)
+function existingPaceByDay(d) {
+  d = Math.min(Math.max(d, 0), Q3_DAYS);
+  if (d <= D_JUIL) return PCT_JUIL * (d / D_JUIL);
+  if (d <= D_JUIL + D_AOUT) return PCT_JUIL + PCT_AOUT * ((d - D_JUIL) / D_AOUT);
+  return PCT_JUIL + PCT_AOUT + PCT_SEPT * ((d - D_JUIL - D_AOUT) / D_SEPT);
+}
+
+function drawPaceCurve(canvasId, paceFn, curveColor) {
+  const canvas = document.getElementById(canvasId);
   if (!canvas) return;
   const dayQ3 = daysElapsedQ3();
-  const pr = nlpPace(dayQ3);
+  const pr = paceFn(dayQ3);
   const W = canvas.parentElement.clientWidth - 40;
   const H = 240;
   const dpr = window.devicePixelRatio || 1;
@@ -750,10 +773,10 @@ function drawCurve() {
     ctx.setLineDash([]);
   });
 
-  // pace NLP curve (piecewise-linear front-loaded)
-  ctx.beginPath(); ctx.strokeStyle = '#1e3a5f'; ctx.lineWidth = 2.5;
+  // pace curve (piecewise-linear)
+  ctx.beginPath(); ctx.strokeStyle = curveColor; ctx.lineWidth = 2.5;
   for (let d = 0; d <= Q3_DAYS; d++) {
-    const x = P.left + (d / Q3_DAYS) * cW, y = P.top + cH * (1 - nlpPace(d));
+    const x = P.left + (d / Q3_DAYS) * cW, y = P.top + cH * (1 - paceFn(d));
     d === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y);
   }
   ctx.stroke();
@@ -774,6 +797,12 @@ function drawCurve() {
   // axes
   ctx.strokeStyle = '#e5e7eb'; ctx.lineWidth = 1;
   ctx.beginPath(); ctx.moveTo(P.left, P.top); ctx.lineTo(P.left, P.top + cH); ctx.lineTo(P.left + cW, P.top + cH); ctx.stroke();
+}
+
+// Dessine les deux courbes de l'onglet AM : Existing (front-loaded, teal) + NLP (back-loaded, navy)
+function drawCurve() {
+  drawPaceCurve('existingCurve', existingPaceByDay, '#00809D');
+  drawPaceCurve('nlpCurve', nlpPace, '#1e3a5f');
 }
 
 // ─── EVOLUTION RENDERING ──────────────────────────────────────────────────────
@@ -889,8 +918,7 @@ function init() {
     AMS_EXISTING.map(am => renderRow(am, paceExisting)).join('') +
     totalRowCurrency('Total Area', exTgt, exTgt * paceExisting, exAct);
   document.getElementById('am-props-tbody').innerHTML =
-    AMS_PROPS.map(renderAmPropsRow).join('') +
-    totalRowNum('Σ AM · goal area 357', amPropTgt, amPropTgt * paceExisting, amPropAct);
+    AMS_PROPS.map(renderAmPropsRow).join('');
   document.getElementById('nlp-tbody').innerHTML =
     AMS_NLP.map(am => renderRow(am, paceNLP)).join('') +
     totalRowCurrency('Total Area', nlpTgt, nlpTgt * paceNLP, nlpAct);
