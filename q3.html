@@ -1,0 +1,945 @@
+<!DOCTYPE html><script type="application/json" id="cowork-artifact-meta">
+{
+  "name": "Tracker Bonus Q3 NA",
+  "schemaVersion": 1,
+  "description": "Tracker bonus Q3 2026 — équipe NA (juil/août/sept). Données Looker : eGMV et objectifs AMs (Existing + NLP + properties) et SMs (properties + eGMV NLP). Mis à jour quotidiennement, snapshots le mercredi. Q3 front-loaded (pic été)."
+}
+</script>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Suivi Bonus Q3 2026 — Area NA</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.5.0/dist/chart.umd.js" integrity="sha384-iU8HYtnGQ8Cy4zl7gbNMOhsDTTKX02BTXptVP/vqAWIaTfM7isw76iyZCsjL2eVi" crossorigin="anonymous"></script>
+<style>
+  :root {
+    color-scheme: light;
+    --teal: #1D9E75;
+    --teal-light: #E1F5EE;
+    --teal-mid: #9FE1CB;
+    --navy: #0d2d3a;
+    --navy-mid: #1a4a5e;
+    --blue: #378add;
+    --blue-light: #E6F1FB;
+    --amber: #BA7517;
+    --amber-light: #FAEEDA;
+    --red: #E24B4A;
+    --red-light: #FCEBEB;
+    --green: #1a5c2e;
+    --green-light: #d4edda;
+    --gray: #f4f3f0;
+    --gray-mid: #b4b2a9;
+    --text: #1a1a18;
+    --text-muted: #6b6b65;
+    --border: rgba(0,0,0,0.08);
+    --radius: 12px;
+    --radius-sm: 8px;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif; background: #f0ede8; color: var(--text); min-height: 100vh; padding: 32px 24px; }
+  .page { max-width: 1040px; margin: 0 auto; }
+
+  /* HEADER */
+  .header { background: var(--navy); border-radius: 16px; padding: 28px 32px; margin-bottom: 24px; display: flex; justify-content: space-between; align-items: flex-start; gap: 16px; }
+  .header h1 { color: #fff; font-size: 22px; font-weight: 600; margin-bottom: 6px; }
+  .header p { color: #7bb8c8; font-size: 13px; }
+  .date-badge { background: #fff3cd; border: 1px solid #f0c040; border-radius: var(--radius-sm); padding: 10px 16px; text-align: center; font-size: 12px; color: #7a5800; white-space: nowrap; flex-shrink: 0; }
+  .date-badge strong { display: block; font-size: 14px; font-weight: 600; }
+  .last-update { background: #e8edf2; color: #3a4a5a; font-size: 11px; padding: 4px 10px; border-radius: 12px; margin-top: 6px; display: inline-block; }
+
+  .section-label { font-size: 11px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: var(--text-muted); margin-bottom: 10px; padding-left: 4px; }
+
+  /* MONTH CARDS */
+  .months-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-bottom: 24px; }
+  .month-card { background: #fff; border: 1px solid var(--border); border-radius: var(--radius); padding: 16px; text-align: center; }
+  .month-card .label { font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.06em; color: var(--text-muted); margin-bottom: 8px; }
+  .month-card .amount { font-size: 20px; font-weight: 600; color: var(--text); margin-bottom: 2px; font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; }
+  .month-card .pct { font-size: 12px; color: var(--text-muted); margin-bottom: 10px; }
+  .bar-wrap { background: #eee; border-radius: 4px; height: 5px; overflow: hidden; margin-bottom: 8px; }
+  .bar-fill { height: 100%; border-radius: 4px; transition: width 0.6s ease; }
+  .month-card .status { font-size: 11px; color: var(--text-muted); }
+
+  /* TABS */
+  .tabs { display: flex; gap: 8px; margin-bottom: 16px; flex-wrap: wrap; }
+  .tab { padding: 8px 20px; border-radius: 20px; font-size: 13px; font-weight: 500; cursor: pointer; border: 1.5px solid transparent; transition: all 0.2s; background: #fff; color: var(--text-muted); border-color: var(--border); }
+  .tab.active { background: var(--navy); color: #fff; border-color: var(--navy); }
+  .tab:not(.active):hover { border-color: var(--navy); color: var(--navy); }
+
+  /* TABLE */
+  .table-wrap { background: #fff; border: 1px solid var(--border); border-radius: var(--radius); overflow: hidden; margin-bottom: 24px; }
+  table { width: 100%; border-collapse: collapse; }
+  thead tr { background: var(--navy); }
+  thead th { color: #9cc8d5; font-weight: 500; padding: 12px 14px; text-align: right; font-size: 11px; text-transform: uppercase; letter-spacing: 0.05em; }
+  thead th:first-child { text-align: left; }
+  tbody tr { border-top: 1px solid var(--border); transition: background 0.15s; }
+  tbody tr:hover { background: #fafaf8; }
+  tbody td { padding: 14px 14px; font-size: 13px; text-align: right; color: var(--text); }
+  tbody td:first-child { text-align: left; font-weight: 600; font-size: 14px; }
+  .mono { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; font-size: 13px; }
+
+  /* NLP / SM header style */
+  thead.sm-thead tr { background: #064e3b; }
+  thead.sm-thead th { color: #a7f3d0; }
+
+  .badge { display: inline-flex; flex-direction: column; align-items: center; padding: 5px 12px; border-radius: 20px; font-size: 12px; font-weight: 600; line-height: 1.4; }
+  .badge span { font-size: 11px; font-weight: 400; }
+  .badge-pct { background: #e8edf2; color: #3a4a5a; }
+  .badge-advance { background: var(--green-light); color: var(--green); }
+  .badge-ok { background: var(--amber-light); color: var(--amber); }
+  .badge-retard { background: var(--red-light); color: var(--red); }
+
+  /* NLP EXPLAINER */
+  .nlp-explainer { background: #f0fdf4; border: 1px solid #bbf7d0; border-radius: var(--radius); padding: 14px 18px; margin-bottom: 18px; display: flex; gap: 14px; align-items: flex-start; }
+  .nlp-explainer-icon { font-size: 20px; flex-shrink: 0; }
+  .nlp-explainer h3 { font-size: 14px; font-weight: 600; color: #065f46; margin-bottom: 3px; }
+  .nlp-explainer p { font-size: 12px; color: #047857; line-height: 1.5; }
+  .nlp-explainer .ref { font-size: 11px; color: #6b7280; margin-top: 3px; font-style: italic; }
+  .prov-flag { background: #FAEEDA; border: 1px solid #f0c040; border-radius: var(--radius); padding: 10px 16px; margin-bottom: 18px; font-size: 12px; color: #7a5800; }
+  .prov-flag strong { color: #6a4a00; }
+
+  /* CURVE CANVAS */
+  .curve-wrap { background: #fff; border: 1px solid var(--border); border-radius: var(--radius); padding: 18px 20px; margin-bottom: 18px; }
+  .curve-wrap h3 { font-size: 13px; font-weight: 600; color: var(--navy); margin-bottom: 12px; }
+  canvas#nlpCurve { display: block; width: 100%; }
+
+  /* SM SUB-SECTION */
+  .section-divider { display:flex; align-items:center; gap:10px; margin: 28px 0 16px; }
+  .section-divider .stick { background: #064e3b; width: 4px; height: 24px; border-radius: 2px; flex-shrink:0 }
+  .section-divider .title { font-size: 15px; font-weight: 700; color: var(--text); }
+  .section-divider .sub { font-size: 12px; color: var(--text-muted); margin-top: 1px; }
+
+  .am-section-divider .stick { background: #0ea5e9 !important; }
+
+  /* LEGEND */
+  .legend { display: flex; gap: 16px; flex-wrap: wrap; margin-bottom: 24px; font-size: 12px; color: var(--text-muted); align-items: center; padding-left: 4px; }
+  .legend-item { display: flex; align-items: center; gap: 6px; }
+  .dot { width: 10px; height: 10px; border-radius: 50%; }
+
+  .footer-note { font-size: 11px; color: var(--gray-mid); text-align: center; margin-top: 8px; line-height: 1.6; }
+
+  .am-name-sub { font-size: 11px; font-weight: 400; color: var(--text-muted); display: block; }
+
+  /* Panel */
+  .panel { display: none; }
+  .panel.active { display: block; }
+
+  /* EVOLUTION TAB */
+  .chart-wrap { background: #fff; border: 1px solid var(--border); border-radius: var(--radius); padding: 20px; margin-bottom: 20px; }
+  .chart-wrap h3 { font-size: 14px; font-weight: 600; color: var(--navy); margin-bottom: 4px; }
+  .chart-wrap .subtitle { font-size: 12px; color: var(--text-muted); margin-bottom: 16px; }
+  .chart-canvas { width: 100%; height: 280px; position: relative; }
+  .empty-state { background: #fff; border: 1px dashed var(--gray-mid); border-radius: var(--radius); padding: 40px 20px; text-align: center; color: var(--text-muted); font-size: 13px; }
+  .empty-state strong { display: block; color: var(--text); font-size: 14px; margin-bottom: 6px; }
+  .snapshot-table-wrap { background: #fff; border: 1px solid var(--border); border-radius: var(--radius); overflow: hidden; margin-bottom: 20px; }
+  .snapshot-table-wrap h3 { padding: 16px 20px; font-size: 14px; font-weight: 600; color: var(--navy); background: #fafaf8; border-bottom: 1px solid var(--border); }
+  .snapshot-table { font-size: 12px; }
+  .snapshot-table th, .snapshot-table td { padding: 10px 12px; text-align: right; border-bottom: 1px solid var(--border); }
+  .snapshot-table th { background: var(--navy); color: #9cc8d5; font-weight: 500; font-size: 11px; text-transform: uppercase; }
+  .snapshot-table th:first-child, .snapshot-table td:first-child { text-align: left; font-weight: 600; }
+  .delta-cell { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; }
+  .delta-positive { color: var(--green); }
+  .delta-negative-mild { color: var(--amber); }
+  .delta-negative-strong { color: var(--red); }
+
+  /* TOTAL ROW */
+  tbody tr.total-row { background: #eef7f3; border-top: 2px solid var(--teal); }
+  tbody tr.total-row:hover { background: #e4f2ec; }
+  tbody tr.total-row td:first-child { color: var(--teal); text-transform: uppercase; font-size: 12px; letter-spacing: 0.04em; }
+  tbody tr.total-row td { font-weight: 600; }
+
+  /* AREA SUMMARY */
+  .area-summary { background: #fff; border: 1px solid var(--border); border-left: 4px solid var(--teal); border-radius: var(--radius); padding: 18px 20px; margin-bottom: 24px; }
+  .area-summary h3 { font-size: 14px; font-weight: 700; color: var(--navy); margin-bottom: 3px; }
+  .area-summary .as-sub { font-size: 11px; color: var(--text-muted); margin-bottom: 14px; }
+  .as-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; }
+  .as-card { background: #f7faf9; border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 12px 14px; }
+  .as-card .as-label { font-size: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; color: var(--text-muted); margin-bottom: 8px; }
+  .as-card .as-line { display: flex; justify-content: space-between; font-size: 12px; margin-bottom: 3px; }
+  .as-card .as-line .k { color: var(--text-muted); }
+  .as-card .as-line .v { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; font-weight: 600; color: var(--text); }
+  .as-card .as-goal .v { color: var(--navy); }
+  .as-card .as-pace .v { color: var(--blue); }
+  .as-card.combined { background: #eef7f3; border-color: var(--teal-mid); }
+  @media (max-width: 760px) { .as-grid { grid-template-columns: repeat(2, 1fr); } }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <!-- HEADER -->
+  <div class="header">
+    <div>
+      <h1>🏠 Suivi Bonus Q3 2026 — Area NA</h1>
+      <p>AM + SM Team · Région NA · Net eGMV au pace de l'area</p>
+      <span class="last-update" id="last-update">Dernière mise à jour : —</span>
+    </div>
+    <div class="date-badge">
+      <strong id="today-label">—</strong>
+      <span id="mois-progress">Juillet en cours</span>
+    </div>
+  </div>
+
+  <!-- MONTHLY TARGETS -->
+  <p class="section-label">Répartition mensuelle de la target area NA · Total Q3 : 4 559 011 € · ⚡ front-loaded (pic été)</p>
+  <div class="months-grid">
+    <div class="month-card">
+      <div class="label">Juillet ⚡</div>
+      <div class="amount">1 946 683 €</div>
+      <div class="pct">42,7% du Q3</div>
+      <div class="bar-wrap"><div class="bar-fill" id="juil-bar" style="background:var(--blue)"></div></div>
+      <div class="status" id="juil-status">En cours...</div>
+    </div>
+    <div class="month-card">
+      <div class="label">Août</div>
+      <div class="amount">1 549 360 €</div>
+      <div class="pct">34,0% du Q3</div>
+      <div class="bar-wrap"><div class="bar-fill" id="aout-bar" style="width:0%;background:var(--navy)"></div></div>
+      <div class="status" id="aout-status">À venir</div>
+    </div>
+    <div class="month-card">
+      <div class="label">Septembre</div>
+      <div class="amount">1 062 968 €</div>
+      <div class="pct">23,3% du Q3</div>
+      <div class="bar-wrap"><div class="bar-fill" id="sept-bar" style="width:0%;background:var(--navy)"></div></div>
+      <div class="status" id="sept-status">À venir</div>
+    </div>
+  </div>
+
+  <!-- TABS -->
+  <div class="tabs">
+    <div class="tab active" onclick="switchTab('am')">👤 AM — Existing + NLP</div>
+    <div class="tab" onclick="switchTab('sm')">🤝 SM — NLP</div>
+    <div class="tab" onclick="switchTab('evolution')">📈 Évolution</div>
+    <div class="tab" onclick="switchTab('area')">🌍 Area</div>
+  </div>
+
+  <!-- AREA PANEL -->
+  <div class="panel" id="panel-area">
+
+    <!-- AREA SUMMARY -->
+    <div class="area-summary">
+      <h3>🎯 Total Area NA — objectif vs attendu au pace</h3>
+      <p class="as-sub" id="area-summary-sub">—</p>
+      <div class="as-grid" id="area-summary-grid"></div>
+    </div>
+
+    <p class="section-label" style="margin-top:8px;">💶 eGMV Area — par flux</p>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Flux eGMV</th>
+            <th>Target Q3</th>
+            <th>Pace attendu<br><span style="font-size:10px;opacity:.7;text-transform:none">au jour J</span></th>
+            <th>Net eGMV actuel</th>
+            <th>% vs Target</th>
+            <th>Achievement vs Pace</th>
+          </tr>
+        </thead>
+        <tbody id="area-egmv-tbody"></tbody>
+      </table>
+    </div>
+
+    <p class="section-label" style="margin-top:8px;">🏠 Volume propriétés Area</p>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Volume</th>
+            <th>Target Q3</th>
+            <th>Pace attendu<br><span style="font-size:10px;opacity:.7;text-transform:none">au jour J</span></th>
+            <th>Actuel</th>
+            <th>% vs Target</th>
+            <th>Achievement vs Pace</th>
+          </tr>
+        </thead>
+        <tbody id="area-props-tbody"></tbody>
+      </table>
+    </div>
+    <p class="footer-note" id="allarea-footnote"></p>
+  </div>
+
+  <!-- AM PANEL -->
+  <div class="panel active" id="panel-am">
+
+    <p class="section-label" style="margin-top:0;">📦 Existing — Net eGMV (AM)</p>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Account Manager</th>
+            <th>Target Q3</th>
+            <th>Pace attendu<br><span style="font-size:10px;opacity:.7;text-transform:none">au jour J</span></th>
+            <th>Net eGMV actuel</th>
+            <th>% vs Target</th>
+            <th>Achievement vs Pace</th>
+          </tr>
+        </thead>
+        <tbody id="existing-tbody"></tbody>
+      </table>
+    </div>
+    <div class="legend">
+      <div class="legend-item"><div class="dot" style="background:var(--red)"></div> Retard &gt;15%</div>
+      <div class="legend-item"><div class="dot" style="background:var(--amber)"></div> Légèrement en retard</div>
+      <div class="legend-item"><div class="dot" style="background:var(--teal)"></div> En avance ✅</div>
+    </div>
+    <p class="footer-note" id="existing-footnote"></p>
+
+    <!-- AM NLP — EXPLAINER -->
+    <div class="nlp-explainer">
+      <div class="nlp-explainer-icon">📐</div>
+      <div>
+        <h3>Courbe NLP Q3 — back-loaded (calée sur Looker)</h3>
+        <p>L'eGMV généré par les nouvelles propriétés s'accumule au fil du trimestre : pic en septembre, pas en juillet. On applique la forme <strong>juil 26% · août 34% · sept 40%</strong> (Look 6867) au target NLP 2026 de l'area (≈ 364 722 €), linéarisée au sein de chaque mois.</p>
+        <p class="ref">Source : Look 6867 — montants historiques Q3 2025 (juil 71 038 € · août 91 020 € · sept 107 742 €, total 269 800 €) ; seule la répartition % est reprise et appliquée au target 2026.</p>
+      </div>
+    </div>
+
+    <!-- CURVE CANVAS -->
+    <div class="curve-wrap">
+      <h3>🔵 Courbe de pace NLP Q3 — Position d'aujourd'hui (🔵)</h3>
+      <canvas id="nlpCurve" height="240"></canvas>
+    </div>
+
+    <!-- AM NLP SECTION -->
+    <div class="section-divider am-section-divider">
+      <div class="stick"></div>
+      <div>
+        <div class="title">🆕 Account Managers — NLP</div>
+        <div class="sub">Nouvelles propriétés + Net eGMV NLP · données Looker NA</div>
+      </div>
+    </div>
+
+    <!-- AM PROPERTIES TABLE -->
+    <p class="section-label" style="margin-top:8px;">📋 Account Managers — Nouvelles propriétés <span style="text-transform:none;font-weight:400;color:#6b7280">· pace = distribution area · goal area 357 (somme AM 366, +9 stretch)</span></p>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Account Manager</th>
+            <th>Target props Q3</th>
+            <th>Pace attendu<br><span style="font-size:10px;opacity:.7;text-transform:none">au jour J</span></th>
+            <th>Props actuelles</th>
+            <th>% Target</th>
+            <th>Achievement vs Pace</th>
+          </tr>
+        </thead>
+        <tbody id="am-props-tbody"></tbody>
+      </table>
+    </div>
+
+    <!-- AM NLP eGMV TABLE -->
+    <p class="section-label" style="margin-top:8px;">💶 Account Managers — Net eGMV NLP</p>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Account Manager</th>
+            <th>Target NLP Q3</th>
+            <th>Pace attendu<br><span style="font-size:10px;opacity:.7;text-transform:none">courbe NLP</span></th>
+            <th>Net eGMV actuel</th>
+            <th>% vs Target</th>
+            <th>Achievement vs Pace</th>
+          </tr>
+        </thead>
+        <tbody id="nlp-tbody"></tbody>
+      </table>
+    </div>
+
+  </div>
+
+  <!-- SM PANEL -->
+  <div class="panel" id="panel-sm">
+
+    <!-- SM NLP — EXPLAINER -->
+    <div class="nlp-explainer">
+      <div class="nlp-explainer-icon">📐</div>
+      <div>
+        <h3>Sales Managers — NLP (propriétés + eGMV)</h3>
+        <p>Propriétés : pace linéaire par mois selon le split individuel. eGMV NLP : même courbe back-loaded que les AM (26 / 34 / 40, Look 6867 — graphe dans l'onglet AM).</p>
+        <p class="ref">Elisa Blond & Clément Doucet exclus · Mathieu Henery exclu · Loïc Kouamé inclus (NA).</p>
+      </div>
+    </div>
+
+    <!-- SM PROPERTIES TABLE -->
+    <p class="section-label" style="margin-top:8px;">📋 Sales Managers — Nombre de propriétés signées <span style="text-transform:none;font-weight:400;color:#6b7280">· pace linéaire par mois (target individuel par mois)</span></p>
+    <div class="table-wrap">
+      <table>
+        <thead class="sm-thead">
+          <tr>
+            <th>Sales Manager</th>
+            <th>Target Q3<br><span style="font-size:10px;opacity:.7;text-transform:none">juil / août / sept</span></th>
+            <th>Pace attendu<br><span style="font-size:10px;opacity:.7;text-transform:none">au jour J</span></th>
+            <th>Properties actuelles</th>
+            <th>% Target</th>
+            <th>Achievement vs Pace</th>
+          </tr>
+        </thead>
+        <tbody id="sm-props-tbody"></tbody>
+      </table>
+    </div>
+
+    <!-- SM EGMV TABLE -->
+    <p class="section-label" style="margin-top:8px;">💶 Sales Managers — Net eGMV NLP</p>
+    <div class="table-wrap">
+      <table>
+        <thead class="sm-thead">
+          <tr>
+            <th>Sales Manager</th>
+            <th>Target eGMV Q3</th>
+            <th>Pace attendu<br><span style="font-size:10px;opacity:.7;text-transform:none">courbe NLP</span></th>
+            <th>Net eGMV actuel</th>
+            <th>% vs Target</th>
+            <th>Achievement vs Pace</th>
+          </tr>
+        </thead>
+        <tbody id="sm-egmv-tbody"></tbody>
+      </table>
+    </div>
+
+    <div class="legend">
+      <div class="legend-item"><div class="dot" style="background:var(--red)"></div> Retard &gt;15%</div>
+      <div class="legend-item"><div class="dot" style="background:var(--amber)"></div> Légèrement en retard</div>
+      <div class="legend-item"><div class="dot" style="background:var(--teal)"></div> En avance ✅</div>
+    </div>
+    <p class="footer-note" id="nlp-footnote"></p>
+  </div>
+
+  <!-- EVOLUTION PANEL -->
+  <div class="panel" id="panel-evolution">
+    <div class="nlp-explainer" style="background:#fef9e7;border-color:#f0d878;">
+      <div class="nlp-explainer-icon">📸</div>
+      <div>
+        <h3 style="color:#7a5800">Snapshot hebdomadaire — chaque mercredi à 8h</h3>
+        <p style="color:#7a5800">Suivez l'écart en % vs le pace attendu de chaque AM, semaine après semaine.</p>
+      </div>
+    </div>
+
+    <div class="chart-wrap">
+      <h3>📦 Existing Properties — Écart vs pace (%)</h3>
+      <p class="subtitle">0% = au pace · positif = en avance · négatif = en retard</p>
+      <div class="chart-canvas"><canvas id="chart-existing"></canvas></div>
+    </div>
+
+    <div class="chart-wrap">
+      <h3>🆕 NLP AM — Écart vs pace (%)</h3>
+      <p class="subtitle">0% = au pace · positif = en avance · négatif = en retard</p>
+      <div class="chart-canvas"><canvas id="chart-nlp"></canvas></div>
+    </div>
+
+    <div class="snapshot-table-wrap" id="snapshot-table-existing-wrap">
+      <h3>📦 Existing — Historique des snapshots (écart vs pace)</h3>
+      <div style="overflow-x:auto"><table class="snapshot-table" id="snapshot-table-existing"></table></div>
+    </div>
+
+    <div class="snapshot-table-wrap" id="snapshot-table-nlp-wrap">
+      <h3>🆕 NLP AM — Historique des snapshots (écart vs pace)</h3>
+      <div style="overflow-x:auto"><table class="snapshot-table" id="snapshot-table-nlp"></table></div>
+    </div>
+
+    <div id="empty-evolution" class="empty-state" style="display:none;">
+      <strong>Pas encore de snapshot hebdomadaire</strong>
+      Le premier snapshot sera pris mercredi prochain à 8h. Les données s'accumuleront chaque semaine ici.
+    </div>
+  </div>
+
+</div>
+
+<script>
+// ─── CONFIG ───────────────────────────────────────────────────────────────────
+const AREA_TARGETS = { juillet: 1946683, aout: 1549360, septembre: 1062968 };
+const TOTAL_Q3 = AREA_TARGETS.juillet + AREA_TARGETS.aout + AREA_TARGETS.septembre;
+const Q3_START = new Date('2026-07-01');
+const TODAY = new Date();
+const LAST_UPDATE = '2026-07-01T08:00:00';
+const Q3_DAYS = 92; // juil 31 + août 31 + sept 30
+
+// Jours par mois (bornes cumulées) : juil J1-J31, août J32-J62, sept J63-J92
+const D_JUIL = 31, D_AOUT = 31, D_SEPT = 30;
+
+function daysElapsedQ3(date) {
+  const d = date || TODAY;
+  // 1-indexed : J1 = 1 juil, J92 = 30 sept
+  const diff = Math.floor((d - Q3_START) / (1000 * 60 * 60 * 24)) + 1;
+  return Math.min(Math.max(diff, 1), Q3_DAYS);
+}
+
+// Convertit un numéro de jour Q3 en date réelle
+function dateForJ(j) {
+  const d = new Date(Q3_START);
+  d.setDate(d.getDate() + (j - 1));
+  return d;
+}
+function fmtJDate(j) {
+  const d = dateForJ(j);
+  return new Intl.DateTimeFormat('fr-FR', { day: 'numeric', month: 'short' }).format(d);
+}
+
+const PCT_JUIL = AREA_TARGETS.juillet   / TOTAL_Q3;
+const PCT_AOUT = AREA_TARGETS.aout      / TOTAL_Q3;
+const PCT_SEPT = AREA_TARGETS.septembre / TOTAL_Q3;
+
+// Pace "existing" : linéaire dans chaque mois, pondéré par la part du mois (front-loaded Q3)
+function existingPace(date) {
+  const dayQ3 = daysElapsedQ3(date);
+  if (dayQ3 <= D_JUIL) return PCT_JUIL * (dayQ3 / D_JUIL);
+  if (dayQ3 <= D_JUIL + D_AOUT) return PCT_JUIL + PCT_AOUT * ((dayQ3 - D_JUIL) / D_AOUT);
+  return PCT_JUIL + PCT_AOUT + PCT_SEPT * ((dayQ3 - D_JUIL - D_AOUT) / D_SEPT);
+}
+
+// ─── PACE NLP Q3 — forme de distribution issue de Looker ─────────────────────
+// Source : Look 6867 « Q3 Area Net eGMV from NLP Monthly distribution », filtre
+// Focus Area FR Nouvelle-Aquitaine (Fernando Martin, 2026-06-17).
+// ⚠️ Les montants du Look sont HISTORIQUES (Q3 2025) : juil 71 038 € · août 91 020 €
+// · sept 107 742 € (total 269 800 €). On n'en garde QUE la forme % (26/34/40), appliquée
+// au vrai target NLP 2026 de l'area (≈ 364 722 €). Back-loaded : pic en septembre.
+const NLP_REF_EUR = [71038, 91020, 107742]; // Q3 2025 — sert à dériver la forme %
+const NLP_REF_TOT = NLP_REF_EUR[0] + NLP_REF_EUR[1] + NLP_REF_EUR[2];
+const NLP_DIST = [NLP_REF_EUR[0] / NLP_REF_TOT, NLP_REF_EUR[1] / NLP_REF_TOT, NLP_REF_EUR[2] / NLP_REF_TOT];
+function nlpPace(dayQ3) {
+  const d = Math.min(Math.max(dayQ3, 0), Q3_DAYS);
+  if (d <= D_JUIL) return NLP_DIST[0] * (d / D_JUIL);
+  if (d <= D_JUIL + D_AOUT) return NLP_DIST[0] + NLP_DIST[1] * ((d - D_JUIL) / D_AOUT);
+  return NLP_DIST[0] + NLP_DIST[1] + NLP_DIST[2] * ((d - D_JUIL - D_AOUT) / D_SEPT);
+}
+
+// ─── DATA — actualisée quotidiennement à 8h ──────────────────────────────────
+// Q3 : J1 = 1er juillet → actuals démarrent à 0, peuplés ensuite par la tâche quotidienne.
+const AMS_EXISTING = [
+  { name: 'M. Braz',        email: 'mariana.braz',      target: 1108805, egmv: 0 },
+  { name: 'A. Dicharry',    email: 'amandine.dicharry', target: 1045275, egmv: 0 },
+  { name: 'L. Millan',      email: 'laetitia.millan',   target: 1040275, egmv: 0 },
+  { name: 'R. Clemenceau',  email: 'remi.clemenceau',   target: 999935,  egmv: 0 },
+];
+
+const AMS_PROPS = [
+  { name: 'R. Clemenceau',  email: 'remi.clemenceau',   target: 96, actual: 0 },
+  { name: 'A. Dicharry',    email: 'amandine.dicharry', target: 95, actual: 0 },
+  { name: 'M. Braz',        email: 'mariana.braz',      target: 94, actual: 0 },
+  { name: 'L. Millan',      email: 'laetitia.millan',   target: 81, actual: 0 },
+];
+// Goal NLP propriétés au niveau AREA (top-down officiel) = 357.
+// La somme des targets AM = 366 (+9) : stretch bottom-up assumé.
+const AREA_NLP_PROPS_GOAL = 357;
+
+const AMS_NLP = [
+  { name: 'A. Dicharry',    email: 'amandine.dicharry', target: 94034, egmv: 0 },
+  { name: 'M. Braz',        email: 'mariana.braz',      target: 92565, egmv: 0 },
+  { name: 'R. Clemenceau',  email: 'remi.clemenceau',   target: 91770, egmv: 0 },
+  { name: 'L. Millan',      email: 'laetitia.millan',   target: 86353, egmv: 0 },
+];
+
+// SM data — Focus Area FR Nouvelle-Aquitaine · Q3
+// propsMonthly = [juil, août, sept] · Elisa Blond & Clément Doucet retirés · Loïc Kouamé inclus (NA)
+// ⚠️ Loïc : somme mensuelle 13+23+19 = 55 ≠ 54 annoncé au trimestre (à vérifier).
+const SMS = [
+  { name: 'A. Monnier',      email: 'arthur.monnier',       short: 'A. Monnier',    propsTarget: 74, propsActual: 0, propsMonthly: [28, 27, 19], egmvTarget: 79159,  egmvActual: 0 },
+  { name: 'G. Sibrac',       email: 'gauthier.sibrac',      short: 'G. Sibrac',     propsTarget: 59, propsActual: 0, propsMonthly: [28, 12, 19], egmvTarget: 75707,  egmvActual: 0 },
+  { name: 'J. Ricbourg',     email: 'jade.ricbourg',        short: 'J. Ricbourg',   propsTarget: 54, propsActual: 0, propsMonthly: [22, 13, 19], egmvTarget: 70844,  egmvActual: 0 },
+  { name: 'N. Sellier',      email: 'naomi.sellier',        short: 'N. Sellier',    propsTarget: 64, propsActual: 0, propsMonthly: [29, 9, 26],  egmvTarget: 65798,  egmvActual: 0 },
+  { name: 'L. Kouamé',       email: 'loic.kouame',          short: 'L. Kouamé',     propsTarget: 54, propsActual: 0, propsMonthly: [13, 23, 19], egmvTarget: 45751,  egmvActual: 0 },
+  { name: 'J. Bouchereau',   email: 'jonathan.bouchereau',  short: 'J. Bouchereau', propsTarget: 20, propsActual: 0, propsMonthly: [14, 6, 0],   egmvTarget: 27461,  egmvActual: 0 },
+];
+
+// Properties pace SM : linéaire par mois selon les targets individuels (M1=juil, M2=août, M3=sept)
+function propsPace(sm, date) {
+  const dayQ3 = daysElapsedQ3(date);
+  const [m1, m2, m3] = sm.propsMonthly;
+  if (dayQ3 <= D_JUIL) return m1 * (dayQ3 / D_JUIL);
+  if (dayQ3 <= D_JUIL + D_AOUT) return m1 + m2 * ((dayQ3 - D_JUIL) / D_AOUT);
+  return m1 + m2 + m3 * ((dayQ3 - D_JUIL - D_AOUT) / D_SEPT);
+}
+
+const HISTORY = [];
+
+// ─── UTILS ────────────────────────────────────────────────────────────────────
+function fmt(n) { return new Intl.NumberFormat('fr-FR', { style: 'currency', currency: 'EUR', maximumFractionDigits: 0 }).format(n); }
+function fmtDate(d) { return new Intl.DateTimeFormat('fr-FR', { day: '2-digit', month: '2-digit' }).format(new Date(d)); }
+function badgeClass(dp) { if (dp >= 5) return 'badge-advance'; if (dp >= -15) return 'badge-ok'; return 'badge-retard'; }
+function badgeEmoji(dp) { if (dp >= 5) return '✅'; if (dp >= -15) return '⚠️'; return '🔴'; }
+function deltaClass(dp) { if (dp >= 5) return 'delta-positive'; if (dp >= -15) return 'delta-negative-mild'; return 'delta-negative-strong'; }
+
+function renderRow(am, paceRatio) {
+  const paceAttendu = am.target * paceRatio;
+  const delta = am.egmv - paceAttendu;
+  const deltaPct = paceAttendu ? (delta / paceAttendu) * 100 : 0;
+  const vsTargetPct = Math.round((am.egmv / am.target) * 100);
+  const sign = delta >= 0 ? '+' : '';
+  const bc = badgeClass(deltaPct);
+  const emoji = badgeEmoji(deltaPct);
+  return `<tr>
+    <td>${am.name}<span class="am-name-sub">${am.email}@holidu.com</span></td>
+    <td class="mono">${fmt(am.target)}</td>
+    <td class="mono">${fmt(Math.round(paceAttendu))}</td>
+    <td class="mono">${fmt(am.egmv)}</td>
+    <td><span class="badge badge-pct">${vsTargetPct}%</span></td>
+    <td><span class="badge ${bc}">${sign}${fmt(Math.round(delta))}<span>${sign}${Math.round(deltaPct)}% vs pace ${emoji}</span></span></td>
+  </tr>`;
+}
+
+function renderAmPropsRow(am) {
+  const pace = am.target * existingPace();
+  const delta = am.actual - pace;
+  const deltaPct = pace ? (delta / pace) * 100 : 0;
+  const pct = Math.round((am.actual / am.target) * 100);
+  const sign = delta >= 0 ? '+' : '';
+  const bc = badgeClass(deltaPct);
+  const emoji = badgeEmoji(deltaPct);
+  return `<tr>
+    <td>${am.name}<span class="am-name-sub">${am.email}@holidu.com</span></td>
+    <td class="mono">${am.target}</td>
+    <td class="mono">${pace.toFixed(1)}</td>
+    <td class="mono"><strong>${am.actual}</strong></td>
+    <td><span class="badge badge-pct">${pct}%</span></td>
+    <td><span class="badge ${bc}">${sign}${delta.toFixed(1)}<span>${sign}${Math.round(deltaPct)}% vs pace ${emoji}</span></span></td>
+  </tr>`;
+}
+
+function renderSmPropsRow(sm) {
+  const pace = propsPace(sm);
+  const delta = sm.propsActual - pace;
+  const deltaPct = pace ? (delta / pace) * 100 : 0;
+  const pct = Math.round((sm.propsActual / sm.propsTarget) * 100);
+  const sign = delta >= 0 ? '+' : '';
+  const bc = badgeClass(deltaPct);
+  const emoji = badgeEmoji(deltaPct);
+  const monthlyStr = `${sm.propsTarget} <span style="font-size:10px;color:#9ca3af">(${sm.propsMonthly.join('/')})</span>`;
+  return `<tr>
+    <td>${sm.name}<span class="am-name-sub">${sm.email}@holidu.com</span></td>
+    <td class="mono">${monthlyStr}</td>
+    <td class="mono">${pace.toFixed(1)}</td>
+    <td class="mono"><strong>${sm.propsActual}</strong></td>
+    <td><span class="badge badge-pct">${pct}%</span></td>
+    <td><span class="badge ${bc}">${sign}${delta.toFixed(1)}<span>${sign}${Math.round(deltaPct)}% vs pace ${emoji}</span></span></td>
+  </tr>`;
+}
+
+function renderSmEgmvRow(sm, paceRatio) {
+  const paceAttendu = sm.egmvTarget * paceRatio;
+  const delta = sm.egmvActual - paceAttendu;
+  const deltaPct = paceAttendu ? (delta / paceAttendu) * 100 : 0;
+  const vsTargetPct = Math.round((sm.egmvActual / sm.egmvTarget) * 100);
+  const sign = delta >= 0 ? '+' : '';
+  const bc = badgeClass(deltaPct);
+  const emoji = badgeEmoji(deltaPct);
+  return `<tr>
+    <td>${sm.name}<span class="am-name-sub">${sm.email}@holidu.com</span></td>
+    <td class="mono">${fmt(sm.egmvTarget)}</td>
+    <td class="mono">${fmt(Math.round(paceAttendu))}</td>
+    <td class="mono">${fmt(sm.egmvActual)}</td>
+    <td><span class="badge badge-pct">${vsTargetPct}%</span></td>
+    <td><span class="badge ${bc}">${sign}${fmt(Math.round(delta))}<span>${sign}${Math.round(deltaPct)}% vs pace ${emoji}</span></span></td>
+  </tr>`;
+}
+
+// ─── TOTALS ───────────────────────────────────────────────────────────────────
+function totalRowCurrency(label, target, pace, actual) {
+  const delta = actual - pace;
+  const dp = pace ? (delta / pace) * 100 : 0;
+  const vt = target ? Math.round((actual / target) * 100) : 0;
+  const sign = delta >= 0 ? '+' : '';
+  const bc = badgeClass(dp), em = badgeEmoji(dp);
+  return `<tr class="total-row">
+    <td>${label}</td>
+    <td class="mono">${fmt(target)}</td>
+    <td class="mono">${fmt(Math.round(pace))}</td>
+    <td class="mono">${fmt(actual)}</td>
+    <td><span class="badge badge-pct">${vt}%</span></td>
+    <td><span class="badge ${bc}">${sign}${fmt(Math.round(delta))}<span>${sign}${Math.round(dp)}% vs pace ${em}</span></span></td>
+  </tr>`;
+}
+function totalRowNum(label, target, pace, actual) {
+  const delta = actual - pace;
+  const dp = pace ? (delta / pace) * 100 : 0;
+  const vt = target ? Math.round((actual / target) * 100) : 0;
+  const sign = delta >= 0 ? '+' : '';
+  const bc = badgeClass(dp), em = badgeEmoji(dp);
+  return `<tr class="total-row">
+    <td>${label}</td>
+    <td class="mono">${target}</td>
+    <td class="mono">${pace.toFixed(1)}</td>
+    <td class="mono">${actual}</td>
+    <td><span class="badge badge-pct">${vt}%</span></td>
+    <td><span class="badge ${bc}">${sign}${delta.toFixed(1)}<span>${sign}${Math.round(dp)}% vs pace ${em}</span></span></td>
+  </tr>`;
+}
+function sum(arr, f) { return arr.reduce((a, x) => a + f(x), 0); }
+
+function areaEgmvRow(label, target, pace, actual, isTotal) {
+  const delta = actual - pace, dp = pace ? (delta / pace) * 100 : 0, vt = target ? Math.round((actual / target) * 100) : 0;
+  const sign = delta >= 0 ? '+' : '', bc = badgeClass(dp), em = badgeEmoji(dp);
+  return `<tr class="${isTotal ? 'total-row' : ''}">
+    <td>${label}</td>
+    <td class="mono">${fmt(target)}</td>
+    <td class="mono">${fmt(Math.round(pace))}</td>
+    <td class="mono">${fmt(actual)}</td>
+    <td><span class="badge badge-pct">${vt}%</span></td>
+    <td><span class="badge ${bc}">${sign}${fmt(Math.round(delta))}<span>${sign}${Math.round(dp)}% vs pace ${em}</span></span></td>
+  </tr>`;
+}
+function areaNumRow(label, target, pace, actual, isTotal) {
+  const delta = actual - pace, dp = pace ? (delta / pace) * 100 : 0, vt = target ? Math.round((actual / target) * 100) : 0;
+  const sign = delta >= 0 ? '+' : '', bc = badgeClass(dp), em = badgeEmoji(dp);
+  return `<tr class="${isTotal ? 'total-row' : ''}">
+    <td>${label}</td>
+    <td class="mono">${target}</td>
+    <td class="mono">${pace.toFixed(1)}</td>
+    <td class="mono">${actual}</td>
+    <td><span class="badge badge-pct">${vt}%</span></td>
+    <td><span class="badge ${bc}">${sign}${delta.toFixed(1)}<span>${sign}${Math.round(dp)}% vs pace ${em}</span></span></td>
+  </tr>`;
+}
+
+function asCard(label, goal, pace, actual, currency, extra) {
+  const fmtV = currency ? (v) => fmt(Math.round(v)) : (v) => (Math.round(v * 10) / 10);
+  const vt = goal ? Math.round((actual / goal) * 100) : 0;
+  return `<div class="as-card ${extra || ''}">
+    <div class="as-label">${label}</div>
+    <div class="as-line as-goal"><span class="k">Goal Q3</span><span class="v">${fmtV(goal)}</span></div>
+    <div class="as-line as-pace"><span class="k">Attendu (pace)</span><span class="v">${fmtV(pace)}</span></div>
+    <div class="as-line"><span class="k">Actuel</span><span class="v">${fmtV(actual)}</span></div>
+    <div class="as-line"><span class="k">% vs goal</span><span class="v">${vt}%</span></div>
+  </div>`;
+}
+
+// ─── CURVE CANVAS ──────────────────────────────────────────────────────────
+function drawCurve() {
+  const canvas = document.getElementById('nlpCurve');
+  if (!canvas) return;
+  const dayQ3 = daysElapsedQ3();
+  const pr = nlpPace(dayQ3);
+  const W = canvas.parentElement.clientWidth - 40;
+  const H = 240;
+  const dpr = window.devicePixelRatio || 1;
+  canvas.width = W * dpr; canvas.height = H * dpr;
+  canvas.style.width = W + 'px'; canvas.style.height = H + 'px';
+  const ctx = canvas.getContext('2d');
+  ctx.scale(dpr, dpr);
+
+  const P = { top: 16, right: 16, bottom: 54, left: 52 };
+  const cW = W - P.left - P.right, cH = H - P.top - P.bottom;
+
+  ctx.fillStyle = '#fff'; ctx.fillRect(0, 0, W, H);
+
+  // grid
+  [0, 0.25, 0.5, 0.75, 1].forEach(y => {
+    const py = P.top + cH * (1 - y);
+    ctx.strokeStyle = '#f1f5f9'; ctx.lineWidth = 1;
+    ctx.beginPath(); ctx.moveTo(P.left, py); ctx.lineTo(P.left + cW, py); ctx.stroke();
+    ctx.fillStyle = '#9ca3af'; ctx.font = '10px -apple-system,sans-serif'; ctx.textAlign = 'right';
+    ctx.fillText((y * 100).toFixed(0) + '%', P.left - 6, py + 4);
+  });
+
+  // x labels — J number + date Q3
+  [1, 15, 31, 46, 62, 77, 92].forEach(d => {
+    const px = P.left + (d / Q3_DAYS) * cW;
+    ctx.fillStyle = '#9ca3af';
+    ctx.font = '10px -apple-system,sans-serif';
+    ctx.textAlign = 'center';
+    ctx.fillText('J' + d, px, H - P.bottom + 14);
+    ctx.fillStyle = '#6b7280';
+    ctx.font = '9px -apple-system,sans-serif';
+    ctx.fillText(fmtJDate(d), px, H - P.bottom + 28);
+  });
+
+  // month boundary lines (J31 fin juil, J62 fin août)
+  [D_JUIL, D_JUIL + D_AOUT].forEach(d => {
+    const px = P.left + (d / Q3_DAYS) * cW;
+    ctx.strokeStyle = '#e5e7eb'; ctx.lineWidth = 1; ctx.setLineDash([2, 3]);
+    ctx.beginPath(); ctx.moveTo(px, P.top); ctx.lineTo(px, P.top + cH); ctx.stroke();
+    ctx.setLineDash([]);
+  });
+
+  // pace NLP curve (piecewise-linear front-loaded)
+  ctx.beginPath(); ctx.strokeStyle = '#1e3a5f'; ctx.lineWidth = 2.5;
+  for (let d = 0; d <= Q3_DAYS; d++) {
+    const x = P.left + (d / Q3_DAYS) * cW, y = P.top + cH * (1 - nlpPace(d));
+    d === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y);
+  }
+  ctx.stroke();
+
+  // TODAY (bleu)
+  const xt = P.left + (dayQ3 / Q3_DAYS) * cW, yt = P.top + cH * (1 - pr);
+  ctx.strokeStyle = 'rgba(59,130,246,0.4)'; ctx.lineWidth = 1.5; ctx.setLineDash([3, 3]);
+  ctx.beginPath(); ctx.moveTo(xt, P.top); ctx.lineTo(xt, P.top + cH); ctx.stroke();
+  ctx.setLineDash([]);
+  ctx.beginPath(); ctx.arc(xt, yt, 6, 0, Math.PI * 2);
+  ctx.fillStyle = '#3b82f6'; ctx.fill();
+  ctx.strokeStyle = '#fff'; ctx.lineWidth = 2; ctx.stroke();
+  const lx = xt + 10 > P.left + cW - 95 ? xt - 100 : xt + 10;
+  ctx.fillStyle = '#3b82f6'; ctx.font = 'bold 9.5px -apple-system,sans-serif'; ctx.textAlign = 'left';
+  ctx.fillText('Auj. J' + dayQ3, lx, yt - 7);
+  ctx.fillText('Pace=' + (pr * 100).toFixed(1) + '%', lx, yt + 7);
+
+  // axes
+  ctx.strokeStyle = '#e5e7eb'; ctx.lineWidth = 1;
+  ctx.beginPath(); ctx.moveTo(P.left, P.top); ctx.lineTo(P.left, P.top + cH); ctx.lineTo(P.left + cW, P.top + cH); ctx.stroke();
+}
+
+// ─── EVOLUTION RENDERING ──────────────────────────────────────────────────────
+const HIST_AM_COLORS = {
+  'mariana.braz':     '#E24B4A',
+  'remi.clemenceau':  '#378add',
+  'amandine.dicharry':'#BA7517',
+  'laetitia.millan':  '#1D9E75',
+};
+
+function buildSnapshotTable(group, ams) {
+  const tbody = document.getElementById(`snapshot-table-${group}`);
+  if (HISTORY.length === 0) return;
+  let html = '<thead><tr><th>AM</th>';
+  HISTORY.forEach(snap => { html += `<th>${fmtDate(snap.date)}</th>`; });
+  html += '</tr></thead><tbody>';
+  ams.forEach(am => {
+    html += `<tr><td>${am.name}</td>`;
+    HISTORY.forEach(snap => {
+      const dp = snap[group][am.email];
+      if (dp === undefined || dp === null) html += '<td class="delta-cell">—</td>';
+      else { const sign = dp >= 0 ? '+' : ''; html += `<td class="delta-cell ${deltaClass(dp)}">${sign}${Math.round(dp)}%</td>`; }
+    });
+    html += '</tr>';
+  });
+  html += '</tbody>';
+  tbody.innerHTML = html;
+}
+
+function buildChart(canvasId, group, ams) {
+  const ctx = document.getElementById(canvasId).getContext('2d');
+  if (HISTORY.length === 0) return;
+  const labels = HISTORY.map(s => fmtDate(s.date));
+  const datasets = ams.map(am => ({
+    label: am.name,
+    data: HISTORY.map(s => s[group][am.email] ?? null),
+    borderColor: HIST_AM_COLORS[am.email] || '#666',
+    backgroundColor: HIST_AM_COLORS[am.email] || '#666',
+    tension: 0.25, spanGaps: true, pointRadius: 4, borderWidth: 2,
+  }));
+  new Chart(ctx, {
+    type: 'line', data: { labels, datasets },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      plugins: {
+        legend: { position: 'bottom', labels: { font: { size: 11 } } },
+        tooltip: { callbacks: { label: (c) => `${c.dataset.label}: ${c.parsed.y >= 0 ? '+' : ''}${Math.round(c.parsed.y)}% vs pace` } }
+      },
+      scales: {
+        y: { title: { display: true, text: 'Écart vs pace (%)' }, ticks: { callback: (v) => (v >= 0 ? '+' : '') + v + '%' }, grid: { color: (c) => c.tick.value === 0 ? '#999' : '#eee' } },
+        x: { grid: { display: false } }
+      }
+    }
+  });
+}
+
+function renderEvolution() {
+  if (HISTORY.length === 0) {
+    document.getElementById('empty-evolution').style.display = 'block';
+    document.getElementById('snapshot-table-existing-wrap').style.display = 'none';
+    document.getElementById('snapshot-table-nlp-wrap').style.display = 'none';
+    document.querySelectorAll('#panel-evolution .chart-wrap').forEach(el => el.style.display = 'none');
+    return;
+  }
+  buildSnapshotTable('existing', AMS_EXISTING);
+  buildSnapshotTable('nlp', AMS_NLP);
+  buildChart('chart-existing', 'existing', AMS_EXISTING);
+  buildChart('chart-nlp', 'nlp', AMS_NLP);
+}
+
+// ─── INIT ─────────────────────────────────────────────────────────────────────
+function init() {
+  const dayQ3 = daysElapsedQ3();
+  const paceExisting = existingPace();
+  const paceNLP = nlpPace(dayQ3);
+
+  document.getElementById('today-label').textContent = TODAY.toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', year: 'numeric' });
+
+  // Mois en cours
+  let moisLabel;
+  if (dayQ3 <= D_JUIL) moisLabel = `Juillet (j${dayQ3}/31)`;
+  else if (dayQ3 <= D_JUIL + D_AOUT) moisLabel = `Août (j${dayQ3 - D_JUIL}/31)`;
+  else moisLabel = `Septembre (j${dayQ3 - D_JUIL - D_AOUT}/30)`;
+  document.getElementById('mois-progress').textContent = moisLabel;
+
+  const lu = new Date(LAST_UPDATE);
+  document.getElementById('last-update').textContent =
+    `Dernière mise à jour : ${lu.toLocaleDateString('fr-FR', { day:'2-digit', month:'2-digit', year:'numeric' })} à ${lu.toLocaleTimeString('fr-FR', { hour:'2-digit', minute:'2-digit' })}`;
+
+  // Barres mensuelles
+  const juilPct = Math.min((dayQ3 / D_JUIL) * 100, 100);
+  const aoutPct = dayQ3 > D_JUIL ? Math.min(((dayQ3 - D_JUIL) / D_AOUT) * 100, 100) : 0;
+  const septPct = dayQ3 > D_JUIL + D_AOUT ? Math.min(((dayQ3 - D_JUIL - D_AOUT) / D_SEPT) * 100, 100) : 0;
+  document.getElementById('juil-bar').style.width = juilPct + '%';
+  document.getElementById('aout-bar').style.width = aoutPct + '%';
+  document.getElementById('sept-bar').style.width = septPct + '%';
+  document.getElementById('juil-status').textContent = dayQ3 <= D_JUIL ? `⏳ En cours (j${dayQ3}/31)` : '✅ Mois terminé';
+  document.getElementById('aout-status').textContent = dayQ3 <= D_JUIL ? 'À venir' : (dayQ3 <= D_JUIL + D_AOUT ? `⏳ En cours (j${dayQ3 - D_JUIL}/31)` : '✅ Mois terminé');
+  document.getElementById('sept-status').textContent = dayQ3 <= D_JUIL + D_AOUT ? 'À venir' : `⏳ En cours (j${dayQ3 - D_JUIL - D_AOUT}/30)`;
+  if (dayQ3 > D_JUIL) document.getElementById('aout-bar').style.background = 'var(--blue)';
+  if (dayQ3 > D_JUIL + D_AOUT) document.getElementById('sept-bar').style.background = 'var(--blue)';
+
+  // Totaux (sommes area)
+  const exTgt = sum(AMS_EXISTING, a => a.target), exAct = sum(AMS_EXISTING, a => a.egmv);
+  const nlpTgt = sum(AMS_NLP, a => a.target), nlpAct = sum(AMS_NLP, a => a.egmv);
+  const amPropTgt = sum(AMS_PROPS, a => a.target), amPropAct = sum(AMS_PROPS, a => a.actual);
+  const smPropTgt = sum(SMS, s => s.propsTarget), smPropAct = sum(SMS, s => s.propsActual);
+  const smPropPace = sum(SMS, s => propsPace(s));
+  const smEgmvTgt = sum(SMS, s => s.egmvTarget), smEgmvAct = sum(SMS, s => s.egmvActual);
+
+  // Tables + lignes de total
+  document.getElementById('existing-tbody').innerHTML =
+    AMS_EXISTING.map(am => renderRow(am, paceExisting)).join('') +
+    totalRowCurrency('Total Area', exTgt, exTgt * paceExisting, exAct);
+  document.getElementById('am-props-tbody').innerHTML =
+    AMS_PROPS.map(renderAmPropsRow).join('') +
+    totalRowNum('Σ AM · goal area 357', amPropTgt, amPropTgt * paceExisting, amPropAct);
+  document.getElementById('nlp-tbody').innerHTML =
+    AMS_NLP.map(am => renderRow(am, paceNLP)).join('') +
+    totalRowCurrency('Total Area', nlpTgt, nlpTgt * paceNLP, nlpAct);
+  document.getElementById('sm-props-tbody').innerHTML =
+    SMS.map(renderSmPropsRow).join('') +
+    totalRowNum('Total SM', smPropTgt, smPropPace, smPropAct);
+  document.getElementById('sm-egmv-tbody').innerHTML =
+    SMS.map(sm => renderSmEgmvRow(sm, paceNLP)).join('') +
+    totalRowCurrency('Total SM', smEgmvTgt, smEgmvTgt * paceNLP, smEgmvAct);
+
+  // Synthèse area (AM : existing + NLP + propriétés)
+  document.getElementById('area-summary-sub').textContent =
+    `Jour ${dayQ3}/92 · pace existing ${(paceExisting*100).toFixed(1)}% (distribution area) · pace NLP ${(paceNLP*100).toFixed(1)}% (Look 6867, back-loaded) · au ${TODAY.toLocaleDateString('fr-FR')}`;
+  document.getElementById('area-summary-grid').innerHTML =
+    asCard('💶 eGMV Existing', exTgt, exTgt * paceExisting, exAct, true) +
+    asCard('🆕 eGMV NLP', nlpTgt, nlpTgt * paceNLP, nlpAct, true) +
+    asCard('Σ eGMV Existing + NLP', exTgt + nlpTgt, exTgt * paceExisting + nlpTgt * paceNLP, exAct + nlpAct, true, 'combined') +
+    asCard('🏠 Nouvelles propriétés', AREA_NLP_PROPS_GOAL, AREA_NLP_PROPS_GOAL * paceExisting, amPropAct, false);
+
+  // Tables area (onglet All Area)
+  document.getElementById('area-egmv-tbody').innerHTML =
+    areaEgmvRow('📦 Existing', exTgt, exTgt * paceExisting, exAct, false) +
+    areaEgmvRow('🆕 NLP', nlpTgt, nlpTgt * paceNLP, nlpAct, false) +
+    areaEgmvRow('Σ Existing + NLP', exTgt + nlpTgt, exTgt * paceExisting + nlpTgt * paceNLP, exAct + nlpAct, true);
+  document.getElementById('area-props-tbody').innerHTML =
+    areaNumRow('🆕 Nouvelles propriétés (goal area)', AREA_NLP_PROPS_GOAL, AREA_NLP_PROPS_GOAL * paceExisting, amPropAct, false) +
+    areaNumRow('✍️ Propriétés signées (SM)', smPropTgt, smPropPace, smPropAct, true);
+  document.getElementById('allarea-footnote').textContent =
+    `eGMV Existing = distribution area front-loaded · eGMV NLP = Look 6867 back-loaded (26/34/40) · Jour ${dayQ3}/92 · au ${TODAY.toLocaleDateString('fr-FR')}`;
+
+  // Footnotes
+  document.getElementById('existing-footnote').textContent =
+    `Pace = distribution area front-loaded (juil ${(PCT_JUIL*100).toFixed(1)}% · août ${(PCT_AOUT*100).toFixed(1)}% · sept ${(PCT_SEPT*100).toFixed(1)}%) · Jour ${dayQ3}/92 → ${(paceExisting*100).toFixed(1)}% du Q3 écoulé · données au ${TODAY.toLocaleDateString('fr-FR')}`;
+  document.getElementById('nlp-footnote').textContent =
+    `Pace NLP = distribution réelle NA Look 6867 (juil 26% · août 34% · sept 40%, back-loaded) · Jour ${dayQ3}/92 → ${(paceNLP*100).toFixed(1)}% attendu · données au ${TODAY.toLocaleDateString('fr-FR')}`;
+
+  renderEvolution();
+}
+
+function switchTab(tab) {
+  const tabs = ['am', 'sm', 'evolution', 'area'];
+  document.querySelectorAll('.tab').forEach((t, i) => t.classList.toggle('active', tabs[i] === tab));
+  tabs.forEach(t => document.getElementById('panel-' + t).classList.toggle('active', t === tab));
+  if (tab === 'am') setTimeout(drawCurve, 60);
+}
+
+init();
+setTimeout(drawCurve, 60); // onglet AM actif au chargement → dessiner la courbe NLP
+window.addEventListener('resize', () => { if (document.getElementById('panel-am').classList.contains('active')) drawCurve(); });
+</script>
+</body>
+</html>
