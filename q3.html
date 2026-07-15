@@ -467,7 +467,7 @@ const AREA_TARGETS = { juillet: 1946683, aout: 1549360, septembre: 1062968 };
 const TOTAL_Q3 = AREA_TARGETS.juillet + AREA_TARGETS.aout + AREA_TARGETS.septembre;
 const Q3_START = new Date('2026-07-01');
 const TODAY = new Date();
-const LAST_UPDATE = '2026-07-13T19:59:00';
+const LAST_UPDATE = '2026-07-15T13:08:00';
 const Q3_DAYS = 92; // juil 31 + août 31 + sept 30
 
 // Jours par mois (bornes cumulées) : juil J1-J31, août J32-J62, sept J63-J92
@@ -522,10 +522,10 @@ function nlpPace(dayQ3) {
 // ─── DATA — actualisée quotidiennement à 8h ──────────────────────────────────
 // Q3 : J1 = 1er juillet → actuals démarrent à 0, peuplés ensuite par la tâche quotidienne.
 const AMS_EXISTING = [
-  { name: 'M. Braz',        email: 'mariana.braz',      target: 999935,  egmv: 236011 },
-  { name: 'A. Dicharry',    email: 'amandine.dicharry', target: 1108805, egmv: 189456 },
-  { name: 'L. Millan',      email: 'laetitia.millan',   target: 1040275, egmv: 168394 },
-  { name: 'R. Clemenceau',  email: 'remi.clemenceau',   target: 1045275, egmv: 209847 },
+  { name: 'M. Braz',        email: 'mariana.braz',      target: 999935,  egmv: 259199 },
+  { name: 'A. Dicharry',    email: 'amandine.dicharry', target: 1108805, egmv: 210956 },
+  { name: 'L. Millan',      email: 'laetitia.millan',   target: 1040275, egmv: 192934 },
+  { name: 'R. Clemenceau',  email: 'remi.clemenceau',   target: 1045275, egmv: 231203 },
 ];
 
 const AMS_PROPS = [
@@ -539,10 +539,10 @@ const AMS_PROPS = [
 const AREA_NLP_PROPS_GOAL = 357;
 
 const AMS_NLP = [
-  { name: 'A. Dicharry',    email: 'amandine.dicharry', target: 92565, egmv: 9280 },
-  { name: 'M. Braz',        email: 'mariana.braz',      target: 91770, egmv: 10506 },
-  { name: 'R. Clemenceau',  email: 'remi.clemenceau',   target: 94034, egmv: 2259 },
-  { name: 'L. Millan',      email: 'laetitia.millan',   target: 86352, egmv: 11087 },
+  { name: 'A. Dicharry',    email: 'amandine.dicharry', target: 92565, egmv: 10449 },
+  { name: 'M. Braz',        email: 'mariana.braz',      target: 91770, egmv: 11057 },
+  { name: 'R. Clemenceau',  email: 'remi.clemenceau',   target: 94034, egmv: 2776 },
+  { name: 'L. Millan',      email: 'laetitia.millan',   target: 86352, egmv: 11219 },
 ];
 
 // SM data — Focus Area FR Nouvelle-Aquitaine · Q3
@@ -550,17 +550,17 @@ const AMS_NLP = [
 // ⚠️ Note QA : une somme mensuelle (13+23+19 = 55) ≠ total trimestre (54) — à vérifier côté source.
 const SMS = [
   { name: 'A. Monnier',      email: 'arthur.monnier',       short: 'A. Monnier',    propsTarget: 82, propsActual: 14, propsMonthly: [33, 28, 21], egmvTarget: 79159,  egmvActual: 7085 },
-  { name: 'G. Sibrac',       email: 'gauthier.sibrac',      short: 'G. Sibrac',     propsTarget: 63, propsActual: 8, propsMonthly: [27, 12, 24], egmvTarget: 75707,  egmvActual: 8303 },
-  { name: 'J. Ricbourg',     email: 'jade.ricbourg',        short: 'J. Ricbourg',   propsTarget: 59, propsActual: 8, propsMonthly: [22, 12, 25], egmvTarget: 70844,  egmvActual: 4111 },
-  { name: 'N. Sellier',      email: 'naomi.sellier',        short: 'N. Sellier',    propsTarget: 70, propsActual: 7, propsMonthly: [32, 9, 29],  egmvTarget: 65798,  egmvActual: 5006 },
-  { name: 'L. Kouamé',       email: 'loic.kouame',          short: 'L. Kouamé',     propsTarget: 61, propsActual: 2, propsMonthly: [15, 24, 22], egmvTarget: 45751,  egmvActual: 0 },
-  { name: 'J. Bouchereau',   email: 'jonathan.bouchereau',  short: 'J. Bouchereau', propsTarget: 22, propsActual: 5, propsMonthly: [14, 8, 0],   egmvTarget: 27461,  egmvActual: 450 },
+  { name: 'G. Sibrac',       email: 'gauthier.sibrac',      short: 'G. Sibrac',     propsTarget: 63, propsActual: 9, propsMonthly: [27, 12, 24], egmvTarget: 75707,  egmvActual: 8990 },
+  { name: 'J. Ricbourg',     email: 'jade.ricbourg',        short: 'J. Ricbourg',   propsTarget: 59, propsActual: 8, propsMonthly: [22, 12, 25], egmvTarget: 70844,  egmvActual: 5339 },
+  { name: 'N. Sellier',      email: 'naomi.sellier',        short: 'N. Sellier',    propsTarget: 70, propsActual: 13, propsMonthly: [32, 9, 29],  egmvTarget: 65798,  egmvActual: 5122 },
+  { name: 'L. Kouamé',       email: 'loic.kouame',          short: 'L. Kouamé',     propsTarget: 61, propsActual: 4, propsMonthly: [15, 24, 22], egmvTarget: 45751,  egmvActual: 100 },
+  { name: 'J. Bouchereau',   email: 'jonathan.bouchereau',  short: 'J. Bouchereau', propsTarget: 22, propsActual: 5, propsMonthly: [14, 8, 0],   egmvTarget: 27461,  egmvActual: 666 },
 ];
 
 // Ligne "Incrémental" — contribution hors périmètre bonus (sans target).
 // Défini comme le résiduel : réel area − somme des SM ciblés. Alimenté par la tâche quotidienne
 // (récap Looker). Pas de target, pas de pace, pas de % → affiché à titre indicatif, remonte au Total SM.
-const SM_INCREMENTAL = { egmvTarget: 18560, egmvActual: 8177, propsTarget: 30, propsActual: 11 };
+const SM_INCREMENTAL = { egmvTarget: 18560, egmvActual: 8200, propsTarget: 30, propsActual: 16 };
 
 // Properties pace SM : linéaire par mois selon les targets individuels (M1=juil, M2=août, M3=sept)
 function propsPace(sm, date) {
