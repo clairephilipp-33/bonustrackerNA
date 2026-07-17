@@ -467,7 +467,7 @@ const AREA_TARGETS = { juillet: 1946683, aout: 1549360, septembre: 1062968 };
 const TOTAL_Q3 = AREA_TARGETS.juillet + AREA_TARGETS.aout + AREA_TARGETS.septembre;
 const Q3_START = new Date('2026-07-01');
 const TODAY = new Date();
-const LAST_UPDATE = '2026-07-17T13:07:00';
+const LAST_UPDATE = '2026-07-17T18:07:00';
 const Q3_DAYS = 92; // juil 31 + août 31 + sept 30
 
 // Jours par mois (bornes cumulées) : juil J1-J31, août J32-J62, sept J63-J92
@@ -522,10 +522,10 @@ function nlpPace(dayQ3) {
 // ─── DATA — actualisée quotidiennement à 8h ──────────────────────────────────
 // Q3 : J1 = 1er juillet → actuals démarrent à 0, peuplés ensuite par la tâche quotidienne.
 const AMS_EXISTING = [
-  { name: 'M. Braz',        email: 'mariana.braz',      target: 999935,  egmv: 282085 },
-  { name: 'A. Dicharry',    email: 'amandine.dicharry', target: 1108805, egmv: 233407 },
-  { name: 'L. Millan',      email: 'laetitia.millan',   target: 1040275, egmv: 219594 },
-  { name: 'R. Clemenceau',  email: 'remi.clemenceau',   target: 1045275, egmv: 278172 },
+  { name: 'M. Braz',        email: 'mariana.braz',      target: 999935,  egmv: 287728 },
+  { name: 'A. Dicharry',    email: 'amandine.dicharry', target: 1108805, egmv: 238903 },
+  { name: 'L. Millan',      email: 'laetitia.millan',   target: 1040275, egmv: 235044 },
+  { name: 'R. Clemenceau',  email: 'remi.clemenceau',   target: 1045275, egmv: 281313 },
 ];
 
 const AMS_PROPS = [
@@ -540,9 +540,9 @@ const AREA_NLP_PROPS_GOAL = 357;
 
 const AMS_NLP = [
   { name: 'A. Dicharry',    email: 'amandine.dicharry', target: 92565, egmv: 11208 },
-  { name: 'M. Braz',        email: 'mariana.braz',      target: 91770, egmv: 11380 },
+  { name: 'M. Braz',        email: 'mariana.braz',      target: 91770, egmv: 12841 },
   { name: 'R. Clemenceau',  email: 'remi.clemenceau',   target: 94034, egmv: 2776 },
-  { name: 'L. Millan',      email: 'laetitia.millan',   target: 86352, egmv: 11839 },
+  { name: 'L. Millan',      email: 'laetitia.millan',   target: 86352, egmv: 11954 },
 ];
 
 // SM data — Focus Area FR Nouvelle-Aquitaine · Q3
