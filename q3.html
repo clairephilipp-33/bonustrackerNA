@@ -467,7 +467,7 @@ const AREA_TARGETS = { juillet: 1946683, aout: 1549360, septembre: 1062968 };
 const TOTAL_Q3 = AREA_TARGETS.juillet + AREA_TARGETS.aout + AREA_TARGETS.septembre;
 const Q3_START = new Date('2026-07-01');
 const TODAY = new Date();
-const LAST_UPDATE = '2026-07-20T08:46:00';
+const LAST_UPDATE = '2026-07-20T13:14:00';
 const Q3_DAYS = 92; // juil 31 + août 31 + sept 30
 
 // Jours par mois (bornes cumulées) : juil J1-J31, août J32-J62, sept J63-J92
@@ -523,9 +523,9 @@ function nlpPace(dayQ3) {
 // Q3 : J1 = 1er juillet → actuals démarrent à 0, peuplés ensuite par la tâche quotidienne.
 const AMS_EXISTING = [
   { name: 'M. Braz',        email: 'mariana.braz',      target: 999935,  egmv: 343862 },
-  { name: 'A. Dicharry',    email: 'amandine.dicharry', target: 1108805, egmv: 274009 },
-  { name: 'L. Millan',      email: 'laetitia.millan',   target: 1040275, egmv: 270367 },
-  { name: 'R. Clemenceau',  email: 'remi.clemenceau',   target: 1045275, egmv: 319725 },
+  { name: 'A. Dicharry',    email: 'amandine.dicharry', target: 1108805, egmv: 274461 },
+  { name: 'L. Millan',      email: 'laetitia.millan',   target: 1040275, egmv: 271034 },
+  { name: 'R. Clemenceau',  email: 'remi.clemenceau',   target: 1045275, egmv: 320007 },
 ];
 
 const AMS_PROPS = [
