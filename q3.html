@@ -467,7 +467,7 @@ const AREA_TARGETS = { juillet: 1946683, aout: 1549360, septembre: 1062968 };
 const TOTAL_Q3 = AREA_TARGETS.juillet + AREA_TARGETS.aout + AREA_TARGETS.septembre;
 const Q3_START = new Date('2026-07-01');
 const TODAY = new Date();
-const LAST_UPDATE = '2026-08-06T09:44:00';
+const LAST_UPDATE = '2026-08-06T15:58:00';
 const Q3_DAYS = 92; // juil 31 + août 31 + sept 30
 
 // Jours par mois (bornes cumulées) : juil J1-J31, août J32-J62, sept J63-J92
@@ -522,10 +522,10 @@ function nlpPace(dayQ3) {
 // ─── DATA — actualisée quotidiennement à 8h ──────────────────────────────────
 // Q3 : J1 = 1er juillet → actuals démarrent à 0, peuplés ensuite par la tâche quotidienne.
 const AMS_EXISTING = [
-  { name: 'M. Braz',        email: 'mariana.braz',      target: 999935,  egmv: 656435 },
-  { name: 'A. Dicharry',    email: 'amandine.dicharry', target: 1108805, egmv: 462838 },
-  { name: 'L. Millan',      email: 'laetitia.millan',   target: 1040275, egmv: 483198 },
-  { name: 'R. Clemenceau',  email: 'remi.clemenceau',   target: 1045275, egmv: 581389 },
+  { name: 'M. Braz',        email: 'mariana.braz',      target: 999935,  egmv: 663876 },
+  { name: 'A. Dicharry',    email: 'amandine.dicharry', target: 1108805, egmv: 470825 },
+  { name: 'L. Millan',      email: 'laetitia.millan',   target: 1040275, egmv: 491695 },
+  { name: 'R. Clemenceau',  email: 'remi.clemenceau',   target: 1045275, egmv: 585490 },
 ];
 
 const AMS_PROPS = [
@@ -551,7 +551,7 @@ const AMS_NLP = [
 const SMS = [
   { name: 'A. Monnier',      email: 'arthur.monnier',       short: 'A. Monnier',    propsTarget: 82, propsActual: 28, propsMonthly: [33, 28, 21], egmvTarget: 79159,  egmvActual: 24090 },
   { name: 'G. Sibrac',       email: 'gauthier.sibrac',      short: 'G. Sibrac',     propsTarget: 63, propsActual: 23, propsMonthly: [27, 12, 24], egmvTarget: 75707,  egmvActual: 45924 },
-  { name: 'J. Ricbourg',     email: 'jade.ricbourg',        short: 'J. Ricbourg',   propsTarget: 59, propsActual: 20, propsMonthly: [22, 12, 25], egmvTarget: 70844,  egmvActual: 22968 },
+  { name: 'J. Ricbourg',     email: 'jade.ricbourg',        short: 'J. Ricbourg',   propsTarget: 59, propsActual: 21, propsMonthly: [22, 12, 25], egmvTarget: 70844,  egmvActual: 22968 },
   { name: 'N. Sellier',      email: 'naomi.sellier',        short: 'N. Sellier',    propsTarget: 70, propsActual: 42, propsMonthly: [32, 9, 29],  egmvTarget: 65798,  egmvActual: 22636 },
   { name: 'L. Kouamé',       email: 'loic.kouame',          short: 'L. Kouamé',     propsTarget: 61, propsActual: 20, propsMonthly: [15, 24, 22], egmvTarget: 45751,  egmvActual: 1149 },
   { name: 'J. Bouchereau',   email: 'jonathan.bouchereau',  short: 'J. Bouchereau', propsTarget: 45, propsActual: 14, propsMonthly: [18, 16, 11], egmvTarget: 56206,  egmvActual: 6695 },
@@ -560,7 +560,7 @@ const SMS = [
 // Ligne "Incrémental" — contribution hors périmètre bonus (sans target).
 // Défini comme le résiduel : réel area − somme des SM ciblés. Alimenté par la tâche quotidienne
 // (récap Looker). Pas de target, pas de pace, pas de % → affiché à titre indicatif, remonte au Total SM.
-const SM_INCREMENTAL = { egmvTarget: 18560, egmvActual: 27335, propsTarget: 30, propsActual: 35 };
+const SM_INCREMENTAL = { egmvTarget: 18560, egmvActual: 27335, propsTarget: 30, propsActual: 36 };
 
 // ─── RÉEL eGMV AREA — SOURCE DE VÉRITÉ : Looker dashboard 854 (FRANCE dashboard) ───
 // Tuile « Net eGMV · this quarter » → ligne « Focus Area FR Nouvelle-Aquitaine ».
@@ -568,7 +568,7 @@ const SM_INCREMENTAL = { egmvTarget: 18560, egmvActual: 27335, propsTarget: 30, 
 // https://holidu.cloud.looker.com/dashboards/854
 // ⚠️ Total area = ce chiffre (top-down). Les lignes Existing/NLP par AM restent affichées
 // à titre indicatif (bottom-up) et ne somment pas forcément au total.
-const AREA_EGMV_ACTUAL = 2238602; // au 2026-08-06 09:44 (dashboard Looker 854, tuile « Net eGMV · this quarter », ligne Focus Area FR Nouvelle-Aquitaine, revenue_bookiply.sum_net_e_gmv — NA seule ; total tuile €10 273 000 vérifié)
+const AREA_EGMV_ACTUAL = 2268826; // au 2026-08-06 15:58 (dashboard Looker 854, tuile « Net eGMV · this quarter », ligne Focus Area FR Nouvelle-Aquitaine, revenue_bookiply.sum_net_e_gmv — NA seule ; total tuile €10 383 870 vérifié)
 
 // Properties pace SM : linéaire par mois selon les targets individuels (M1=juil, M2=août, M3=sept)
 function propsPace(sm, date) {
