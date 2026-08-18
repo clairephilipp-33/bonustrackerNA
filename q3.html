@@ -467,7 +467,7 @@ const AREA_TARGETS = { juillet: 1946683, aout: 1549360, septembre: 1062968 };
 const TOTAL_Q3 = AREA_TARGETS.juillet + AREA_TARGETS.aout + AREA_TARGETS.septembre;
 const Q3_START = new Date('2026-07-01');
 const TODAY = new Date();
-const LAST_UPDATE = '2026-08-18T08:56:00';
+const LAST_UPDATE = '2026-08-18T13:05:00';
 const Q3_DAYS = 92; // juil 31 + août 31 + sept 30
 
 // Jours par mois (bornes cumulées) : juil J1-J31, août J32-J62, sept J63-J92
@@ -522,8 +522,8 @@ function nlpPace(dayQ3) {
 // ─── DATA — actualisée quotidiennement à 8h ──────────────────────────────────
 // Q3 : J1 = 1er juillet → actuals démarrent à 0, peuplés ensuite par la tâche quotidienne.
 const AMS_EXISTING = [
-  { name: 'M. Braz',        email: 'mariana.braz',      target: 999935,  egmv: 823606 },
-  { name: 'A. Dicharry',    email: 'amandine.dicharry', target: 1108805, egmv: 582405 },
+  { name: 'M. Braz',        email: 'mariana.braz',      target: 999935,  egmv: 823683 },
+  { name: 'A. Dicharry',    email: 'amandine.dicharry', target: 1108805, egmv: 582954 },
   { name: 'L. Millan',      email: 'laetitia.millan',   target: 1040275, egmv: 588260 },
   { name: 'R. Clemenceau',  email: 'remi.clemenceau',   target: 1045275, egmv: 695211 },
 ];
@@ -570,7 +570,7 @@ const SM_INCREMENTAL = { egmvTarget: 18560, egmvActual: 34768, propsTarget: 30, 
 // https://holidu.cloud.looker.com/dashboards/854
 // ⚠️ Total area = ce chiffre (top-down). Les lignes Existing/NLP par AM restent affichées
 // à titre indicatif (bottom-up) et ne somment pas forcément au total.
-const AREA_EGMV_ACTUAL = 2759220; // au 2026-08-18 08:56 (Athena holidu_homes.revenue : SUM(net_e_gmv), reporting_date ∈ [2026-07-01, 2026-10-01), focus_area = 'Focus Area FR Nouvelle-Aquitaine' — NA seule. Réplique la tuile « Net eGMV · this quarter » du dashboard Looker 854. Max reporting_date Athena = 2026-08-18. Blocs AM/SM/incrémental 100% Athena. L. Kouamé props 28→33 et eGMV 3898→3663 : ré-attribution d'apparts via le sales_manager du dernier snapshot ; M. Braz props AM 116→119)
+const AREA_EGMV_ACTUAL = 2760041; // au 2026-08-18 13:05 (Athena holidu_homes.revenue : SUM(net_e_gmv), reporting_date ∈ [2026-07-01, 2026-10-01), focus_area = 'Focus Area FR Nouvelle-Aquitaine' — NA seule. Réplique la tuile « Net eGMV · this quarter » du dashboard Looker 854. Blocs AM/SM/incrémental 100% Athena. Run 13h05 : dérive intraday seule vs run 8h56 — area 2759220→2760041, M. Braz existing 823606→823683, A. Dicharry existing 582405→582954 ; tous les autres blocs (AM NLP, props AM, SM props/eGMV, incrémental) inchangés)
 
 // Properties pace SM : linéaire par mois selon les targets individuels (M1=juil, M2=août, M3=sept)
 function propsPace(sm, date) {
