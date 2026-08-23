@@ -467,7 +467,7 @@ const AREA_TARGETS = { juillet: 1946683, aout: 1549360, septembre: 1062968 };
 const TOTAL_Q3 = AREA_TARGETS.juillet + AREA_TARGETS.aout + AREA_TARGETS.septembre;
 const Q3_START = new Date('2026-07-01');
 const TODAY = new Date();
-const LAST_UPDATE = '2026-08-22T18:04:00';
+const LAST_UPDATE = '2026-08-23T08:06:00';
 const Q3_DAYS = 92; // juil 31 + août 31 + sept 30
 
 // Jours par mois (bornes cumulées) : juil J1-J31, août J32-J62, sept J63-J92
@@ -570,7 +570,7 @@ const SM_INCREMENTAL = { egmvTarget: 18560, egmvActual: 35562, propsTarget: 30, 
 // https://holidu.cloud.looker.com/dashboards/854
 // ⚠️ Total area = ce chiffre (top-down). Les lignes Existing/NLP par AM restent affichées
 // à titre indicatif (bottom-up) et ne somment pas forcément au total.
-const AREA_EGMV_ACTUAL = 2908640; // au 2026-08-22 18:04 (Athena holidu_homes.revenue : SUM(net_e_gmv), reporting_date ∈ [2026-07-01, 2026-10-01), focus_area = 'Focus Area FR Nouvelle-Aquitaine' — NA seule. Réplique la tuile « Net eGMV · this quarter » du dashboard Looker 854. Run 18h04 : area 2895779→2908640 (+12 861 depuis le run de 13h05). 100% Athena, y compris les blocs SM : masquage PII de apartment_history.sales_manager LEVÉ (GROUP BY direct lisible). Contrôles : somme props SM 201 + incrémental 48 = total 249 ✓ ; somme eGMV NLP SM 174 135 + incrémental 35 562 = 209 697 = total NLP 209 697 = somme eGMV NLP AM (209 697, dont 451 sur AM vide) ✓)
+const AREA_EGMV_ACTUAL = 2908640; // vérifié 2026-08-23 08:06 (Athena holidu_homes.revenue : SUM(net_e_gmv), reporting_date ∈ [2026-07-01, 2026-10-01), focus_area = 'Focus Area FR Nouvelle-Aquitaine' — NA seule. Réplique la tuile « Net eGMV · this quarter » du dashboard Looker 854. ⚠️ Run du 23/08 08h06 : AUCUN actual n'a bougé — le warehouse n'a pas encore chargé le 23/08 (MAX(reporting_date) = 2026-08-22, snapshot apartment_history = 2026-08-22, identiques au run du 22/08 18h04). Masquage PII de apartment_history.sales_manager de nouveau ACTIF → blocs SM extraits via UNION ALL à labels littéraux. Contrôles : somme props SM 201 + incrémental 48 = total 249 ✓ ; somme eGMV NLP SM 174 135 + incrémental 35 562 = 209 697 = total NLP 209 697 = somme eGMV NLP AM (209 697, dont 451 sur AM vide) ✓)
 
 // Properties pace SM : linéaire par mois selon les targets individuels (M1=juil, M2=août, M3=sept)
 function propsPace(sm, date) {
