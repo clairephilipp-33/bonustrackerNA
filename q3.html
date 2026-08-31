@@ -467,7 +467,7 @@ const AREA_TARGETS = { juillet: 1946683, aout: 1549360, septembre: 1062968 };
 const TOTAL_Q3 = AREA_TARGETS.juillet + AREA_TARGETS.aout + AREA_TARGETS.septembre;
 const Q3_START = new Date('2026-07-01');
 const TODAY = new Date();
-const LAST_UPDATE = '2026-08-31T08:34:00';
+const LAST_UPDATE = '2026-08-31T13:05:00';
 const Q3_DAYS = 92; // juil 31 + août 31 + sept 30
 
 // Jours par mois (bornes cumulées) : juil J1-J31, août J32-J62, sept J63-J92
@@ -522,10 +522,10 @@ function nlpPace(dayQ3) {
 // ─── DATA — actualisée quotidiennement à 8h ──────────────────────────────────
 // Q3 : J1 = 1er juillet → actuals démarrent à 0, peuplés ensuite par la tâche quotidienne.
 const AMS_EXISTING = [
-  { name: 'M. Braz',        email: 'mariana.braz',      target: 999935,  egmv: 951424 },
-  { name: 'A. Dicharry',    email: 'amandine.dicharry', target: 1108805, egmv: 678902 },
-  { name: 'L. Millan',      email: 'laetitia.millan',   target: 1040275, egmv: 685802 },
-  { name: 'R. Clemenceau',  email: 'remi.clemenceau',   target: 1045275, egmv: 794155 },
+  { name: 'M. Braz',        email: 'mariana.braz',      target: 999935,  egmv: 951688 },
+  { name: 'A. Dicharry',    email: 'amandine.dicharry', target: 1108805, egmv: 679005 },
+  { name: 'L. Millan',      email: 'laetitia.millan',   target: 1040275, egmv: 686579 },
+  { name: 'R. Clemenceau',  email: 'remi.clemenceau',   target: 1045275, egmv: 794380 },
 ];
 
 const AMS_PROPS = [
@@ -562,7 +562,7 @@ const SMS = [
 // Ligne "Incrémental" — contribution hors périmètre bonus (sans target).
 // Défini comme le résiduel : réel area − somme des SM ciblés. Alimenté par la tâche quotidienne
 // (récap Looker). Pas de target, pas de pace, pas de % → affiché à titre indicatif, remonte au Total SM.
-const SM_INCREMENTAL = { egmvTarget: 18560, egmvActual: 39168, propsTarget: 30, propsActual: 58 };
+const SM_INCREMENTAL = { egmvTarget: 18560, egmvActual: 39168, propsTarget: 30, propsActual: 59 };
 
 // ─── RÉEL eGMV AREA — SOURCE DE VÉRITÉ : Looker dashboard 854 (FRANCE dashboard) ───
 // Tuile « Net eGMV · this quarter » → ligne « Focus Area FR Nouvelle-Aquitaine ».
@@ -570,7 +570,7 @@ const SM_INCREMENTAL = { egmvTarget: 18560, egmvActual: 39168, propsTarget: 30, 
 // https://holidu.cloud.looker.com/dashboards/854
 // ⚠️ Total area = ce chiffre (top-down). Les lignes Existing/NLP par AM restent affichées
 // à titre indicatif (bottom-up) et ne somment pas forcément au total.
-const AREA_EGMV_ACTUAL = 3196933; // verifie 2026-08-31 08:34 (Athena holidu_homes.revenue : SUM(net_e_gmv), reporting_date ∈ [2026-07-01, 2026-10-01), focus_area = 'Focus Area FR Nouvelle-Aquitaine' — NA seule = existing 3 002 346 + NLP 194 587. Réplique la tuile « Net eGMV · this quarter » du dashboard Looker 854. Fraîcheur : MAX(reporting_date) revenue = 2026-08-31, snapshot apartment_history = 2026-08-31. Masquage PII de apartment_history.sales_manager ACTIF ce run → mapping SM par ORDER BY smcode (codes littéraux 0=incrémental … 6=Bouchereau), croisé avec les valeurs du run précédent (Sibrac/Ricbourg identiques au € près). Contrôles : props SM 230 + incrémental 58 = total 288 ✓ ; eGMV NLP SM 201 084 + incrémental 39 168 = 240 252 = somme AM NLP 240 254 (dont 864 sur AM vide, écart 2 € d’arrondi) = total NLP NA+OOF 240 253 ✓ ; NA seule 3 196 933 + OOF 195 108 = 3 392 041 total NA+OOF ✓)
+const AREA_EGMV_ACTUAL = 3198303; // verifie 2026-08-31 13:05 (Athena holidu_homes.revenue : SUM(net_e_gmv), reporting_date ∈ [2026-07-01, 2026-10-01), focus_area = 'Focus Area FR Nouvelle-Aquitaine' — NA seule = existing 3 003 716 + NLP 194 588. Réplique la tuile « Net eGMV · this quarter » du dashboard Looker 854. Fraîcheur : MAX(reporting_date) revenue = 2026-08-31, snapshot apartment_history = 2026-08-31. Masquage PII de apartment_history.sales_manager ACTIF ce run → mapping SM par ORDER BY smcode (codes littéraux 0=incrémental … 6=Bouchereau), croisé avec les valeurs du run précédent (les 6 SM identiques au € près et à l'unité près sur les props). Contrôles : props SM 230 + incrémental 59 = total 289 ✓ ; eGMV NLP SM 201 084 + incrémental 39 168 = 240 252 = somme AM NLP 240 254 (dont 864 sur AM vide, écart 2 € d’arrondi) ✓ ; NA seule 3 198 303 + OOF 195 347 = 3 393 650 total NA+OOF ✓. Δ vs run 08:34 : seul l'eGMV existing a bougé (+1 370 € area) + incrémental props 58→59 ; NLP et props AM inchangés.)
 
 // Properties pace SM : linéaire par mois selon les targets individuels (M1=juil, M2=août, M3=sept)
 function propsPace(sm, date) {
