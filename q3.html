@@ -467,7 +467,7 @@ const AREA_TARGETS = { juillet: 1946683, aout: 1549360, septembre: 1062968 };
 const TOTAL_Q3 = AREA_TARGETS.juillet + AREA_TARGETS.aout + AREA_TARGETS.septembre;
 const Q3_START = new Date('2026-07-01');
 const TODAY = new Date();
-const LAST_UPDATE = '2026-09-05T16:04:00';
+const LAST_UPDATE = '2026-09-06T06:18:00';
 const Q3_DAYS = 92; // juil 31 + août 31 + sept 30
 
 // Jours par mois (bornes cumulées) : juil J1-J31, août J32-J62, sept J63-J92
@@ -570,7 +570,7 @@ const SM_INCREMENTAL = { egmvTarget: 18560, egmvActual: 41886, propsTarget: 30, 
 // https://holidu.cloud.looker.com/dashboards/854
 // ⚠️ Total area = ce chiffre (top-down). Les lignes Existing/NLP par AM restent affichées
 // à titre indicatif (bottom-up) et ne somment pas forcément au total.
-const AREA_EGMV_ACTUAL = 3372643; // verifie 2026-09-05 16:04 UTC (Athena holidu_homes.revenue : SUM(net_e_gmv), reporting_date ∈ [2026-07-01, 2026-10-01), focus_area = 'Focus Area FR Nouvelle-Aquitaine' — NA seule. Réplique la tuile « Net eGMV · this quarter » du dashboard Looker 854. Fraîcheur : MAX(reporting_date) revenue = 2026-09-05, dernier snapshot apartment_history = 2026-09-05. Masquage PII de sales_manager ACTIF → mapping SM par smcode + ORDER BY, cross-checké : Sibrac 64 416 et Bouchereau 21 876 identiques au € près au run 11:05, props SM 53/31/58/58/46/29 et incrémental 66 inchangés, props AM 171/71/50/31 inchangées. Contrôles : props SM 275 + incrémental 66 = 341 ✓ ; eGMV NLP SM 221 732 + incrémental 41 886 = 263 618 = somme AM NLP 263 619 (dont 864 sur AM vide, écart d'arrondi) ✓ ; NA seule 3 372 643 + OOF 216 629 = 3 589 272 ✓. Δ vs run 2026-09-05 11:05 : area +19 142 € ; AM existing +6 670 (Braz), +5 077 (Dicharry), +2 462 (Millan), +4 256 (Clemenceau) ; AM NLP +1 021 (Braz), +508 (Dicharry), +206 (Clemenceau), +369 (Millan) ; SM eGMV Monnier 43 813→44 167, Sibrac inchangé, Ricbourg 32 634→33 004, Sellier 39 256→40 213, Kouamé 17 990→18 056, Bouchereau inchangé, incrémental 41 531→41 886 ; aucune propriété nouvelle depuis le run de 11:05.)
+const AREA_EGMV_ACTUAL = 3372643; // verifie 2026-09-06 06:18 UTC (Athena holidu_homes.revenue : SUM(net_e_gmv), reporting_date ∈ [2026-07-01, 2026-10-01), focus_area = 'Focus Area FR Nouvelle-Aquitaine' — NA seule. Réplique la tuile « Net eGMV · this quarter » du dashboard Looker 854. Fraîcheur : MAX(reporting_date) revenue = 2026-09-05, dernier snapshot apartment_history = 2026-09-05 — IDENTIQUES au run du 2026-09-05 16:04, le warehouse n'a pas avancé. Conséquence : les 19 actuals sont inchangés au chiffre près (aucune erreur, run de week-end tôt le matin) ; seuls LAST_UPDATE et ce commentaire sont bumpés pour tracer le run. Masquage PII de sales_manager INACTIF ce run (smcode lisible), mapping croisé-vérifié avec le run précédent : Monnier 44 167, Sibrac 64 416, Ricbourg 33 004, Sellier 40 213, Kouamé 18 056, Bouchereau 21 876 — identiques. Contrôles : props SM 275 + incrémental 66 = 341 ✓ ; eGMV NLP SM 221 732 + incrémental 41 886 = 263 618 = somme AM NLP 263 619 (dont 864 sur AM vide, écart d'arrondi) ✓ ; NA seule 3 372 643 + OOF 216 629 = 3 589 272 ✓ ; props AM 171/71/50/31 inchangées.)
 
 // Properties pace SM : linéaire par mois selon les targets individuels (M1=juil, M2=août, M3=sept)
 function propsPace(sm, date) {
