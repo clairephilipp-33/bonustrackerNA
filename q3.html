@@ -467,7 +467,7 @@ const AREA_TARGETS = { juillet: 1946683, aout: 1549360, septembre: 1062968 };
 const TOTAL_Q3 = AREA_TARGETS.juillet + AREA_TARGETS.aout + AREA_TARGETS.septembre;
 const Q3_START = new Date('2026-07-01');
 const TODAY = new Date();
-const LAST_UPDATE = '2026-09-08T07:12:00';
+const LAST_UPDATE = '2026-09-08T11:05:00';
 const Q3_DAYS = 92; // juil 31 + août 31 + sept 30
 
 // Jours par mois (bornes cumulées) : juil J1-J31, août J32-J62, sept J63-J92
@@ -562,7 +562,7 @@ const SMS = [
 // Ligne "Incrémental" — contribution hors périmètre bonus (sans target).
 // Défini comme le résiduel : réel area − somme des SM ciblés. Alimenté par la tâche quotidienne
 // (récap Looker). Pas de target, pas de pace, pas de % → affiché à titre indicatif, remonte au Total SM.
-const SM_INCREMENTAL = { egmvTarget: 18560, egmvActual: 45582, propsTarget: 30, propsActual: 69 };
+const SM_INCREMENTAL = { egmvTarget: 18560, egmvActual: 45583, propsTarget: 30, propsActual: 69 };
 
 // ─── RÉEL eGMV AREA — SOURCE DE VÉRITÉ : Looker dashboard 854 (FRANCE dashboard) ───
 // Tuile « Net eGMV · this quarter » → ligne « Focus Area FR Nouvelle-Aquitaine ».
@@ -570,7 +570,7 @@ const SM_INCREMENTAL = { egmvTarget: 18560, egmvActual: 45582, propsTarget: 30, 
 // https://holidu.cloud.looker.com/dashboards/854
 // ⚠️ Total area = ce chiffre (top-down). Les lignes Existing/NLP par AM restent affichées
 // à titre indicatif (bottom-up) et ne somment pas forcément au total.
-const AREA_EGMV_ACTUAL = 3463560; // verifie 2026-09-08 07:12 UTC (Athena holidu_homes.revenue : SUM(net_e_gmv), reporting_date ∈ [2026-07-01, 2026-10-01), focus_area = 'Focus Area FR Nouvelle-Aquitaine' — NA seule. Réplique la tuile « Net eGMV · this quarter » du dashboard Looker 854. Fraîcheur : MAX(reporting_date) revenue = 2026-09-08 et dernier snapshot apartment_history = 2026-09-08. PAS de masquage PII ce run : sales_manager et account_manager_latest lisibles en clair via GROUP BY direct (mapping par e-mail). Mouvements vs 2026-09-07 18:39 : area 3 439 528 → 3 463 560 (+24 032) ; AM existing Braz 1 020 949 → 1 024 563, Dicharry 728 464 → 732 212, Millan 736 679 → 747 202, Clemenceau 852 046 → 857 658 ; AM NLP Braz 132 793 → 135 186, Dicharry 80 508 → 80 601, Clemenceau 33 847 → 34 161, Millan stable 27 173 ; props AM inchangées (174/71/50/31) ; SM eGMV Monnier 45 280 → 45 594, Sibrac 65 531 → 66 140, Ricbourg 35 146 → 35 227, Sellier 42 525 → 42 632, Kouamé 19 803 → 20 887, Bouchereau 22 329 → 22 422 ; props SM toutes inchangées (53/31/58/58/47/29) ; incrémental SM eGMV 45 072 → 45 582, props 69 stable. Contrôles : props SM 276 + incrémental 69 = 345 ✓ ; eGMV NLP SM 232 902 + incrémental 45 582 = 278 484 ≈ somme AM NLP 278 486 (dont 1 365 sur AM vide, écart 2 € d'arrondi) ✓ ; NA seule 3 463 560 + OOF 223 859 = 3 687 419 ✓.
+const AREA_EGMV_ACTUAL = 3463560; // verifie 2026-09-08 11:05 UTC (Athena holidu_homes.revenue : SUM(net_e_gmv), reporting_date ∈ [2026-07-01, 2026-10-01), focus_area = 'Focus Area FR Nouvelle-Aquitaine' — NA seule. Réplique la tuile « Net eGMV · this quarter » du dashboard Looker 854. Fraîcheur : MAX(reporting_date) revenue = 2026-09-08 et dernier snapshot apartment_history = 2026-09-08 — identiques au run de 07:12 UTC, donc le warehouse n'a pas avancé depuis. PAS de masquage PII ce run : sales_manager et account_manager_latest lisibles en clair via GROUP BY direct (mapping par e-mail). Mouvements vs 2026-09-08 07:12 : AUCUN actual n'a bougé (area 3 463 560 ; AM existing Braz 1 024 563, Dicharry 732 212, Millan 747 202, Clemenceau 857 658 ; AM NLP Braz 135 186, Dicharry 80 601, Clemenceau 34 161, Millan 27 173 ; props AM 174/71/50/31 ; SM eGMV Sibrac 66 140, Monnier 45 594, Sellier 42 632, Ricbourg 35 227, Bouchereau 22 422, Kouamé 20 887 ; props SM 58/58/53/47/31/29). Seule correction : incrémental SM eGMV 45 582 → 45 583 (arrondi du résiduel recalculé sur les valeurs non arrondies : 45 583,28 €). Contrôles : props SM 276 + incrémental 69 = 345 ✓ ; eGMV NLP SM 232 903 + incrémental 45 583 = 278 487 = somme AM NLP 278 487 (dont 1 365 sur AM vide) ✓ ; NA seule 3 463 560 + OOF 223 859 = 3 687 419 ✓.
 
 // Properties pace SM : linéaire par mois selon les targets individuels (M1=juil, M2=août, M3=sept)
 function propsPace(sm, date) {
