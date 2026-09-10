@@ -467,7 +467,7 @@ const AREA_TARGETS = { juillet: 1946683, aout: 1549360, septembre: 1062968 };
 const TOTAL_Q3 = AREA_TARGETS.juillet + AREA_TARGETS.aout + AREA_TARGETS.septembre;
 const Q3_START = new Date('2026-07-01');
 const TODAY = new Date();
-const LAST_UPDATE = '2026-09-10T06:46:00';
+const LAST_UPDATE = '2026-09-10T11:05:00';
 const Q3_DAYS = 92; // juil 31 + août 31 + sept 30
 
 // Jours par mois (bornes cumulées) : juil J1-J31, août J32-J62, sept J63-J92
@@ -522,7 +522,7 @@ function nlpPace(dayQ3) {
 // ─── DATA — actualisée quotidiennement à 8h ──────────────────────────────────
 // Q3 : J1 = 1er juillet → actuals démarrent à 0, peuplés ensuite par la tâche quotidienne.
 const AMS_EXISTING = [
-  { name: 'M. Braz',        email: 'mariana.braz',      target: 999935,  egmv: 1042090 },
+  { name: 'M. Braz',        email: 'mariana.braz',      target: 999935,  egmv: 1042848 },
   { name: 'A. Dicharry',    email: 'amandine.dicharry', target: 1108805, egmv: 747417 },
   { name: 'L. Millan',      email: 'laetitia.millan',   target: 1040275, egmv: 767149 },
   { name: 'R. Clemenceau',  email: 'remi.clemenceau',   target: 1045275, egmv: 870588 },
@@ -562,7 +562,7 @@ const SMS = [
 // Ligne "Incrémental" — contribution hors périmètre bonus (sans target).
 // Défini comme le résiduel : réel area − somme des SM ciblés. Alimenté par la tâche quotidienne
 // (récap Looker). Pas de target, pas de pace, pas de % → affiché à titre indicatif, remonte au Total SM.
-const SM_INCREMENTAL = { egmvTarget: 18560, egmvActual: 46857, propsTarget: 30, propsActual: 70 };
+const SM_INCREMENTAL = { egmvTarget: 18560, egmvActual: 46857, propsTarget: 30, propsActual: 71 };
 
 // ─── RÉEL eGMV AREA — SOURCE DE VÉRITÉ : Looker dashboard 854 (FRANCE dashboard) ───
 // Tuile « Net eGMV · this quarter » → ligne « Focus Area FR Nouvelle-Aquitaine ».
@@ -570,7 +570,7 @@ const SM_INCREMENTAL = { egmvTarget: 18560, egmvActual: 46857, propsTarget: 30, 
 // https://holidu.cloud.looker.com/dashboards/854
 // ⚠️ Total area = ce chiffre (top-down). Les lignes Existing/NLP par AM restent affichées
 // à titre indicatif (bottom-up) et ne somment pas forcément au total.
-const AREA_EGMV_ACTUAL = 3534123; // verifie 2026-09-10 06:46 UTC (Athena holidu_homes.revenue : SUM(net_e_gmv), reporting_date in [2026-07-01, 2026-10-01), focus_area = 'Focus Area FR Nouvelle-Aquitaine' - NA seule. Replique la tuile « Net eGMV · this quarter » du dashboard Looker 854. Fraicheur : MAX(reporting_date) revenue = 2026-09-10 et dernier snapshot apartment_history = 2026-09-10 (nouveau jour, warehouse a jour). PAS de masquage PII ce run : account_manager et sales_manager lisibles en clair via GROUP BY direct (mapping par e-mail). Mouvements vs 2026-09-09 17:29 : area 3 514 652 -> 3 534 123 ; AM existing Braz 1 035 753 -> 1 042 090, Dicharry 745 045 -> 747 417, Millan 761 294 -> 767 149, Clemenceau 866 725 -> 870 588 ; AM NLP Braz 138 960 -> 141 259, Dicharry 82 559 -> 82 695, Millan 27 742 -> 28 222, Clemenceau 35 653 -> 35 656 ; props AM inchangees (Braz 179, Dicharry 71, Clemenceau 51, Millan 31) ; SM eGMV Monnier 48 140 -> 49 258, Sibrac 66 636 -> 67 070, Ricbourg 36 597 -> 36 775, Sellier 44 304 -> 44 529, Kouame 21 418 -> 21 902, Bouchereau 22 754 -> 22 829 ; props SM : Kouame 47 -> 48 (+1), autres inchangees (Ricbourg 62, Sellier 62, Monnier 53, Sibrac 32, Bouchereau 29) ; incremental eGMV 46 451 -> 46 857, props 70 =. Controles : props SM 286 + incremental 70 = 356 OK ; eGMV NLP SM 242 362 + incremental 46 857 = 289 219 = somme AM NLP 289 219 (dont 1 387 sur AM vide) OK ; NA seule 3 534 123 + OOF 231 016 = 3 765 139 OK. Aucun timeout ce run.
+const AREA_EGMV_ACTUAL = 3534882; // verifie 2026-09-10 11:05 UTC (Athena holidu_homes.revenue : SUM(net_e_gmv), reporting_date in [2026-07-01, 2026-10-01), focus_area = 'Focus Area FR Nouvelle-Aquitaine' - NA seule. Replique la tuile « Net eGMV · this quarter » du dashboard Looker 854. Fraicheur : MAX(reporting_date) revenue = 2026-09-10 et dernier snapshot apartment_history = 2026-09-10 (meme snapshot que le run de 06:46, seuls les mouvements intraday jouent). PAS de masquage PII ce run : account_manager et sales_manager lisibles en clair via GROUP BY direct (mapping par e-mail). Mouvements vs 2026-09-10 06:46 : area 3 534 123 -> 3 534 882 ; AM existing Braz 1 042 090 -> 1 042 848, autres inchangees (Dicharry 747 417, Millan 767 149, Clemenceau 870 588) ; AM NLP inchangees (Braz 141 259, Dicharry 82 695, Clemenceau 35 656, Millan 28 222) ; props AM inchangees (Braz 179, Dicharry 71, Clemenceau 51, Millan 31) ; SM eGMV inchangees (Sibrac 67 070, Monnier 49 258, Sellier 44 529, Ricbourg 36 775, Bouchereau 22 829, Kouame 21 902) ; props SM inchangees (Sellier 62, Ricbourg 62, Monnier 53, Kouame 48, Sibrac 32, Bouchereau 29) ; incremental eGMV 46 857 =, props 70 -> 71 (+1, Magalie Kone). Controles : props SM 286 + incremental 71 = 357 OK ; eGMV NLP SM 242 362 + incremental 46 857 = 289 219 = somme AM NLP 289 219 (dont 1 387 sur AM vide) OK ; NA seule 3 534 882 + OOF 231 016 = 3 765 898 OK. Aucun timeout ni masquage PII ce run.
 
 // Properties pace SM : linéaire par mois selon les targets individuels (M1=juil, M2=août, M3=sept)
 function propsPace(sm, date) {
