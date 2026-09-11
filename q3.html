@@ -467,7 +467,7 @@ const AREA_TARGETS = { juillet: 1946683, aout: 1549360, septembre: 1062968 };
 const TOTAL_Q3 = AREA_TARGETS.juillet + AREA_TARGETS.aout + AREA_TARGETS.septembre;
 const Q3_START = new Date('2026-07-01');
 const TODAY = new Date();
-const LAST_UPDATE = '2026-09-11T06:42:00';
+const LAST_UPDATE = '2026-09-11T11:39:00';
 const Q3_DAYS = 92; // juil 31 + août 31 + sept 30
 
 // Jours par mois (bornes cumulées) : juil J1-J31, août J32-J62, sept J63-J92
@@ -522,9 +522,9 @@ function nlpPace(dayQ3) {
 // ─── DATA — actualisée quotidiennement à 8h ──────────────────────────────────
 // Q3 : J1 = 1er juillet → actuals démarrent à 0, peuplés ensuite par la tâche quotidienne.
 const AMS_EXISTING = [
-  { name: 'M. Braz',        email: 'mariana.braz',      target: 999935,  egmv: 1048584 },
-  { name: 'A. Dicharry',    email: 'amandine.dicharry', target: 1108805, egmv: 754965 },
-  { name: 'L. Millan',      email: 'laetitia.millan',   target: 1040275, egmv: 774964 },
+  { name: 'M. Braz',        email: 'mariana.braz',      target: 999935,  egmv: 1049482 },
+  { name: 'A. Dicharry',    email: 'amandine.dicharry', target: 1108805, egmv: 755764 },
+  { name: 'L. Millan',      email: 'laetitia.millan',   target: 1040275, egmv: 775140 },
   { name: 'R. Clemenceau',  email: 'remi.clemenceau',   target: 1045275, egmv: 880784 },
 ];
 
@@ -541,7 +541,7 @@ const AMS_PROPS = [
 const AREA_NLP_PROPS_GOAL = 357;
 
 const AMS_NLP = [
-  { name: 'A. Dicharry',    email: 'amandine.dicharry', target: 92565, egmv: 83210 },
+  { name: 'A. Dicharry',    email: 'amandine.dicharry', target: 92565, egmv: 83279 },
   { name: 'M. Braz',        email: 'mariana.braz',      target: 91770, egmv: 144551 },
   { name: 'R. Clemenceau',  email: 'remi.clemenceau',   target: 94034, egmv: 36308 },
   { name: 'L. Millan',      email: 'laetitia.millan',   target: 86352, egmv: 28222 },
@@ -556,7 +556,7 @@ const SMS = [
   { name: 'J. Ricbourg',     email: 'jade.ricbourg',        short: 'J. Ricbourg',   propsTarget: 59, propsActual: 62, propsMonthly: [22, 12, 25], egmvTarget: 70844,  egmvActual: 37425 },
   { name: 'N. Sellier',      email: 'naomi.sellier',        short: 'N. Sellier',    propsTarget: 70, propsActual: 63, propsMonthly: [32, 9, 29],  egmvTarget: 65798,  egmvActual: 44679 },
   { name: 'L. Kouamé',       email: 'loic.kouame',          short: 'L. Kouamé',     propsTarget: 61, propsActual: 49, propsMonthly: [15, 24, 22], egmvTarget: 45751,  egmvActual: 22552 },
-  { name: 'J. Bouchereau',   email: 'jonathan.bouchereau',  short: 'J. Bouchereau', propsTarget: 45, propsActual: 29, propsMonthly: [18, 16, 11], egmvTarget: 56206,  egmvActual: 22906 },
+  { name: 'J. Bouchereau',   email: 'jonathan.bouchereau',  short: 'J. Bouchereau', propsTarget: 45, propsActual: 29, propsMonthly: [18, 16, 11], egmvTarget: 56206,  egmvActual: 22974 },
 ];
 
 // Ligne "Incrémental" — contribution hors périmètre bonus (sans target).
@@ -570,7 +570,7 @@ const SM_INCREMENTAL = { egmvTarget: 18560, egmvActual: 48127, propsTarget: 30, 
 // https://holidu.cloud.looker.com/dashboards/854
 // ⚠️ Total area = ce chiffre (top-down). Les lignes Existing/NLP par AM restent affichées
 // à titre indicatif (bottom-up) et ne somment pas forcément au total.
-const AREA_EGMV_ACTUAL = 3568706; // verifie 2026-09-11 06:42 UTC (Athena holidu_homes.revenue : SUM(net_e_gmv), reporting_date in [2026-07-01, 2026-10-01), focus_area = 'Focus Area FR Nouvelle-Aquitaine' - NA seule. Replique la tuile Net eGMV this quarter du dashboard Looker 854. Fraicheur : MAX(reporting_date) revenue = 2026-09-11 et dernier snapshot apartment_history = 2026-09-11. PAS de masquage PII ce run : account_manager et sales_manager lisibles en clair via GROUP BY direct (mapping par e-mail). Mouvements vs 2026-09-10 18:22 : area 3 551 563 -> 3 568 706 (+17 143) ; AM existing Braz 1 043 794 -> 1 048 584, Dicharry 750 924 -> 754 965, Millan 771 736 -> 774 964, Clemenceau 876 176 -> 880 784 ; AM NLP Braz 143 458 -> 144 551, Dicharry 82 773 -> 83 210, Clemenceau 35 656 -> 36 308, Millan 28 222 = ; props AM Braz 179 -> 180, autres inchangees (Dicharry 71, Clemenceau 51, Millan 33) ; SM eGMV Monnier 49 258 -> 49 827, Ricbourg 36 775 -> 37 425, Sellier 44 529 -> 44 679, Kouame 21 902 -> 22 552, Sibrac 68 162 =, Bouchereau 22 906 = ; props SM Monnier 53 -> 54, autres inchangees (Sellier 63, Ricbourg 62, Kouame 49, Sibrac 32, Bouchereau 29) ; incremental eGMV 47 963 -> 48 127, props 73 -> 72 (une propriete reattribuee a Monnier dans le dernier snapshot : total SM + incremental stable a 361). Controles : props SM 289 + incremental 72 = 361 OK ; eGMV NLP SM 245 550 + incremental 48 127 = 293 677 = somme AM NLP 293 678 (dont 1 387 sur AM vide, ecart de 1 du a l'arrondi) OK ; NA seule 3 568 706 + OOF 232 982 = 3 801 688 OK. Aucun timeout ni masquage PII ce run.
+const AREA_EGMV_ACTUAL = 3570646; // verifie 2026-09-11 11:39 UTC (Athena holidu_homes.revenue : SUM(net_e_gmv), reporting_date in [2026-07-01, 2026-10-01), focus_area = 'Focus Area FR Nouvelle-Aquitaine' - NA seule. Replique la tuile Net eGMV this quarter du dashboard Looker 854. Fraicheur : MAX(reporting_date) revenue = 2026-09-11 et dernier snapshot apartment_history = 2026-09-11. PAS de masquage PII ce run : account_manager et sales_manager lisibles en clair via GROUP BY direct (mapping par e-mail). Mouvements vs 2026-09-11 06:42 : area 3 568 706 -> 3 570 646 (+1 940) ; AM existing Braz 1 048 584 -> 1 049 482, Dicharry 754 965 -> 755 764, Millan 774 964 -> 775 140, Clemenceau 880 784 = ; AM NLP Dicharry 83 210 -> 83 279, Braz 144 551 =, Clemenceau 36 308 =, Millan 28 222 = ; props AM inchangees (Braz 180, Dicharry 71, Clemenceau 51, Millan 33) ; SM eGMV Bouchereau 22 906 -> 22 974, autres inchangees (Monnier 49 827, Sibrac 68 162, Ricbourg 37 425, Sellier 44 679, Kouame 22 552) ; props SM inchangees (Sellier 63, Ricbourg 62, Monnier 54, Kouame 49, Sibrac 32, Bouchereau 29) ; incremental eGMV 48 127 =, props 72 =. Controles : props SM 289 + incremental 72 = 361 OK ; eGMV NLP SM 245 619 + incremental 48 127 = 293 746 = somme AM NLP 293 746 (dont 1 387 sur AM vide) OK ; NA seule 3 570 646 + OOF 232 982 = 3 803 628 OK. Aucun timeout ni masquage PII ce run.
 
 // Properties pace SM : linéaire par mois selon les targets individuels (M1=juil, M2=août, M3=sept)
 function propsPace(sm, date) {
