@@ -467,7 +467,7 @@ const AREA_TARGETS = { juillet: 1946683, aout: 1549360, septembre: 1062968 };
 const TOTAL_Q3 = AREA_TARGETS.juillet + AREA_TARGETS.aout + AREA_TARGETS.septembre;
 const Q3_START = new Date('2026-07-01');
 const TODAY = new Date();
-const LAST_UPDATE = '2026-09-28T11:04:00';
+const LAST_UPDATE = '2026-09-28T18:53:00';
 const Q3_DAYS = 92; // juil 31 + août 31 + sept 30
 
 // Jours par mois (bornes cumulées) : juil J1-J31, août J32-J62, sept J63-J92
@@ -522,10 +522,10 @@ function nlpPace(dayQ3) {
 // ─── DATA — actualisée quotidiennement à 8h ──────────────────────────────────
 // Q3 : J1 = 1er juillet → actuals démarrent à 0, peuplés ensuite par la tâche quotidienne.
 const AMS_EXISTING = [
-  { name: 'M. Braz',        email: 'mariana.braz',      target: 999935,  egmv: 1183181 },
-  { name: 'A. Dicharry',    email: 'amandine.dicharry', target: 1108805, egmv: 858646 },
-  { name: 'L. Millan',      email: 'laetitia.millan',   target: 1040275, egmv: 878079 },
-  { name: 'R. Clemenceau',  email: 'remi.clemenceau',   target: 1045275, egmv: 973348 },
+  { name: 'M. Braz',        email: 'mariana.braz',      target: 999935,  egmv: 1186472 },
+  { name: 'A. Dicharry',    email: 'amandine.dicharry', target: 1108805, egmv: 862757 },
+  { name: 'L. Millan',      email: 'laetitia.millan',   target: 1040275, egmv: 882687 },
+  { name: 'R. Clemenceau',  email: 'remi.clemenceau',   target: 1045275, egmv: 975665 },
 ];
 
 const AMS_PROPS = [
@@ -541,28 +541,28 @@ const AMS_PROPS = [
 const AREA_NLP_PROPS_GOAL = 357;
 
 const AMS_NLP = [
-  { name: 'A. Dicharry',    email: 'amandine.dicharry', target: 92565, egmv: 97807 },
-  { name: 'M. Braz',        email: 'mariana.braz',      target: 91770, egmv: 198712 },
-  { name: 'R. Clemenceau',  email: 'remi.clemenceau',   target: 94034, egmv: 52550 },
-  { name: 'L. Millan',      email: 'laetitia.millan',   target: 86352, egmv: 34866 },
+  { name: 'A. Dicharry',    email: 'amandine.dicharry', target: 92565, egmv: 98339 },
+  { name: 'M. Braz',        email: 'mariana.braz',      target: 91770, egmv: 199143 },
+  { name: 'R. Clemenceau',  email: 'remi.clemenceau',   target: 94034, egmv: 53519 },
+  { name: 'L. Millan',      email: 'laetitia.millan',   target: 86352, egmv: 36488 },
 ];
 
 // SM data — Focus Area FR Nouvelle-Aquitaine · Q3
 // propsMonthly = [juil, août, sept]
 // ⚠️ Note QA : une somme mensuelle (13+23+19 = 55) ≠ total trimestre (54) — à vérifier côté source.
 const SMS = [
-  { name: 'A. Monnier',      email: 'arthur.monnier',       short: 'A. Monnier',    propsTarget: 82, propsActual: 74, propsMonthly: [33, 28, 21], egmvTarget: 79159,  egmvActual: 63448 },
+  { name: 'A. Monnier',      email: 'arthur.monnier',       short: 'A. Monnier',    propsTarget: 82, propsActual: 74, propsMonthly: [33, 28, 21], egmvTarget: 79159,  egmvActual: 63576 },
   { name: 'G. Sibrac',       email: 'gauthier.sibrac',      short: 'G. Sibrac',     propsTarget: 63, propsActual: 42, propsMonthly: [27, 12, 24], egmvTarget: 75707,  egmvActual: 75669 },
-  { name: 'J. Ricbourg',     email: 'jade.ricbourg',        short: 'J. Ricbourg',   propsTarget: 59, propsActual: 74, propsMonthly: [22, 12, 25], egmvTarget: 70844,  egmvActual: 49715 },
+  { name: 'J. Ricbourg',     email: 'jade.ricbourg',        short: 'J. Ricbourg',   propsTarget: 59, propsActual: 74, propsMonthly: [22, 12, 25], egmvTarget: 70844,  egmvActual: 50397 },
   { name: 'N. Sellier',      email: 'naomi.sellier',        short: 'N. Sellier',    propsTarget: 70, propsActual: 66, propsMonthly: [32, 9, 29],  egmvTarget: 65798,  egmvActual: 62636 },
-  { name: 'L. Kouamé',       email: 'loic.kouame',          short: 'L. Kouamé',     propsTarget: 61, propsActual: 57, propsMonthly: [15, 24, 22], egmvTarget: 45751,  egmvActual: 40041 },
-  { name: 'J. Bouchereau',   email: 'jonathan.bouchereau',  short: 'J. Bouchereau', propsTarget: 45, propsActual: 31, propsMonthly: [18, 16, 11], egmvTarget: 56206,  egmvActual: 27641 },
+  { name: 'L. Kouamé',       email: 'loic.kouame',          short: 'L. Kouamé',     propsTarget: 61, propsActual: 57, propsMonthly: [15, 24, 22], egmvTarget: 45751,  egmvActual: 40703 },
+  { name: 'J. Bouchereau',   email: 'jonathan.bouchereau',  short: 'J. Bouchereau', propsTarget: 45, propsActual: 32, propsMonthly: [18, 16, 11], egmvTarget: 56206,  egmvActual: 28044 },
 ];
 
 // Ligne "Incrémental" — contribution hors périmètre bonus (sans target).
 // Défini comme le résiduel : réel area − somme des SM ciblés. Alimenté par la tâche quotidienne
 // (récap Looker). Pas de target, pas de pace, pas de % → affiché à titre indicatif, remonte au Total SM.
-const SM_INCREMENTAL = { egmvTarget: 18560, egmvActual: 66786, propsTarget: 30, propsActual: 84 };
+const SM_INCREMENTAL = { egmvTarget: 18560, egmvActual: 66674, propsTarget: 30, propsActual: 84 };
 
 // ─── RÉEL eGMV AREA — SOURCE DE VÉRITÉ : Looker dashboard 854 (FRANCE dashboard) ───
 // Tuile « Net eGMV · this quarter » → ligne « Focus Area FR Nouvelle-Aquitaine ».
@@ -570,7 +570,8 @@ const SM_INCREMENTAL = { egmvTarget: 18560, egmvActual: 66786, propsTarget: 30, 
 // https://holidu.cloud.looker.com/dashboards/854
 // ⚠️ Total area = ce chiffre (top-down). Les lignes Existing/NLP par AM restent affichées
 // à titre indicatif (bottom-up) et ne somment pas forcément au total.
-const AREA_EGMV_ACTUAL = 4031378; // verifie 2026-09-28 11:04 UTC (Athena holidu_homes.revenue : SUM(net_e_gmv), reporting_date in [2026-07-01, 2026-10-01), focus_area = 'Focus Area FR Nouvelle-Aquitaine' - NA seule. Replique la tuile Net eGMV this quarter du dashboard Looker 854. Fraicheur : MAX(reporting_date) revenue = 2026-09-28 ET snapshot apartment_history = 2026-09-28 - MEMES dates que le run de 08:10 : le snapshot s'est legerement enrichi en intraday, les variations sont donc minimes. Pas de masquage PII ce run. Valeurs : area 4 031 378 (+351) ; AM existing Braz 1 183 181 (inchange), Clemenceau 973 348 (inchange), Millan 878 079 (inchange), Dicharry 858 646 (+351) ; AM NLP Braz 198 712 (+43), Dicharry 97 807 (inchange), Clemenceau 52 550 (inchange), Millan 34 866 (inchange) ; props AM Braz 196, Dicharry 97, Clemenceau 68, Millan 37 (TOUS inchanges) ; SM eGMV Sibrac 75 669, Monnier 63 448, Sellier 62 636, Ricbourg 49 715 (inchanges), Kouame 40 041 (+44), Bouchereau 27 641 (inchange) ; props SM Monnier 74, Ricbourg 74, Sellier 66, Kouame 57, Sibrac 42, Bouchereau 31 (TOUS inchanges) ; incremental eGMV 66 786 (+1), props 84 (inchange). Controles : eGMV NLP SM 319 150 + incremental 66 786 = 385 936 = somme AM NLP 385 936 (dont 2 001 sur AM vide) OK ; props SM 344 + incremental 84 = 428 OK ; NA seule 4 031 378 + OOF 301 092 = 4 332 470 OK.
+const AREA_EGMV_ACTUAL = 4046845; // verifie 2026-09-28 18:53 UTC (Athena holidu_homes.revenue : SUM(net_e_gmv), reporting_date in [2026-07-01, 2026-10-01), focus_area = 'Focus Area FR Nouvelle-Aquitaine' - NA seule. Replique la tuile Net eGMV this quarter du dashboard Looker 854. Fraicheur : MAX(reporting_date) revenue = 2026-09-28 ET snapshot apartment_history = 2026-09-28 - MEMES dates que le run de 11:04, revenue et snapshot enrichis dans l apres-midi. Pas de masquage PII ce run (GROUP BY account_manager et sales_manager lisibles). Valeurs : area 4 046 845 (+15 467) ; AM existing Braz 1 186 472 (+3 291), Clemenceau 975 665 (+2 317), Millan 882 687 (+4 608), Dicharry 862 757 (+4 111) ; AM NLP Braz 199 143 (+431), Dicharry 98 339 (+532), Clemenceau 53 519 (+969), Millan 36 488 (+1 622) ; props AM Braz 196, Dicharry 97, Clemenceau 68, Millan 37 (TOUS inchanges) ; SM eGMV Sibrac 75 669 (inchange), Monnier 63 576 (+128), Sellier 62 636 (inchange), Ricbourg 50 397 (+682), Kouame 40 703 (+662), Bouchereau 28 044 (+403) ; props SM Monnier 74, Ricbourg 74, Sellier 66, Kouame 57, Sibrac 42 (inchanges), Bouchereau 32 (+1) ; incremental eGMV 66 674 (-112, re-attribution), props 84 (inchange). Controles : eGMV NLP SM 321 025 + incremental 66 674 = 387 699 = somme AM NLP 387 702 (dont 213 sur AM vide, ecart 3 EUR d arrondi) OK ; props SM 345 + incremental 84 = 429 OK ; NA seule 4 046 845 + OOF 302 232 = 4 349 077 OK.
+// --- historique run precedent --- // verifie 2026-09-28 11:04 UTC (Athena holidu_homes.revenue : SUM(net_e_gmv), reporting_date in [2026-07-01, 2026-10-01), focus_area = 'Focus Area FR Nouvelle-Aquitaine' - NA seule. Replique la tuile Net eGMV this quarter du dashboard Looker 854. Fraicheur : MAX(reporting_date) revenue = 2026-09-28 ET snapshot apartment_history = 2026-09-28 - MEMES dates que le run de 08:10 : le snapshot s'est legerement enrichi en intraday, les variations sont donc minimes. Pas de masquage PII ce run. Valeurs : area 4 031 378 (+351) ; AM existing Braz 1 183 181 (inchange), Clemenceau 973 348 (inchange), Millan 878 079 (inchange), Dicharry 858 646 (+351) ; AM NLP Braz 198 712 (+43), Dicharry 97 807 (inchange), Clemenceau 52 550 (inchange), Millan 34 866 (inchange) ; props AM Braz 196, Dicharry 97, Clemenceau 68, Millan 37 (TOUS inchanges) ; SM eGMV Sibrac 75 669, Monnier 63 448, Sellier 62 636, Ricbourg 49 715 (inchanges), Kouame 40 041 (+44), Bouchereau 27 641 (inchange) ; props SM Monnier 74, Ricbourg 74, Sellier 66, Kouame 57, Sibrac 42, Bouchereau 31 (TOUS inchanges) ; incremental eGMV 66 786 (+1), props 84 (inchange). Controles : eGMV NLP SM 319 150 + incremental 66 786 = 385 936 = somme AM NLP 385 936 (dont 2 001 sur AM vide) OK ; props SM 344 + incremental 84 = 428 OK ; NA seule 4 031 378 + OOF 301 092 = 4 332 470 OK.
 // --- historique run precedent --- // verifie 2026-09-28 08:10 UTC (Athena holidu_homes.revenue : SUM(net_e_gmv), reporting_date in [2026-07-01, 2026-10-01), focus_area = 'Focus Area FR Nouvelle-Aquitaine' - NA seule. Replique la tuile Net eGMV this quarter du dashboard Looker 854. Fraicheur : MAX(reporting_date) revenue = 2026-09-28 ET snapshot apartment_history = 2026-09-28 (les DEUX ont avance vs run du 27 17:55). Pas de masquage PII ce run. Valeurs : area 4 031 027 (+13 723) ; AM existing Braz 1 183 181 (+6 079), Clemenceau 973 348 (+1 685), Millan 878 079 (+4 132), Dicharry 858 295 (+2 617) ; AM NLP Braz 198 669 (+1 216), Dicharry 97 807 (+172), Clemenceau 52 550 (+16), Millan 34 866 (+312) ; props AM Braz 196, Dicharry 97, Clemenceau 68, Millan 37 (TOUS inchanges malgre le nouveau snapshot) ; SM eGMV Sibrac 75 669 (inchange), Monnier 63 448 (+312), Sellier 62 636 (+12), Ricbourg 49 715 (+172), Kouame 39 997 (inchange), Bouchereau 27 641 (inchange) ; props SM Monnier 74, Ricbourg 74, Sellier 66, Kouame 57, Sibrac 42, Bouchereau 31 (TOUS inchanges) ; incremental eGMV 66 785 (+1 299), props 84 (inchange). Controles : eGMV NLP SM 319 106 + incremental 66 785 = 385 891 = somme AM NLP 385 893 (dont 2 001 sur AM vide, ecart 2 EUR d arrondi) OK ; props SM 344 + incremental 84 = 428 OK ; NA seule 4 031 027 + OOF 301 049 = 4 332 076 OK.
 // --- historique run precedent --- // verifie 2026-09-27 17:55 UTC (Athena holidu_homes.revenue : SUM(net_e_gmv), reporting_date in [2026-07-01, 2026-10-01), focus_area = 'Focus Area FR Nouvelle-Aquitaine' - NA seule. Replique la tuile Net eGMV this quarter du dashboard Looker 854. Fraicheur : MAX(reporting_date) revenue = 2026-09-27 ET snapshot apartment_history = 2026-09-27 (les DEUX ont avance vs run de 08:16, qui lisait un snapshot au 2026-09-26). Pas de masquage PII ce run. Valeurs : area 4 017 304 (+13 389) ; AM existing Braz 1 177 102 (+4 300), Clemenceau 971 663 (+2 867), Millan 873 947 (+2 527), Dicharry 855 678 (+3 106) ; AM NLP Braz 197 453 (+1 688), Dicharry 97 635 (+699), Clemenceau 52 534 (inchange), Millan 34 554 (+110) ; props AM Braz 196 (-1, snapshot du 27 : une propriete depubliee), Dicharry 97, Clemenceau 68, Millan 37 (inchanges) ; SM eGMV Sibrac 75 669 (inchange), Monnier 63 136 (+149), Sellier 62 624 (+804), Ricbourg 49 543 (+157), Kouame 39 997 (+176), Bouchereau 27 641 (+107) ; props SM Monnier 74, Ricbourg 74, Sellier 66, Kouame 57, Sibrac 42, Bouchereau 31 (TOUS inchanges malgre le nouveau snapshot) ; incremental eGMV 65 486 (+1 189), props 84 (inchange). Controles : eGMV NLP SM 318 610 + incremental 65 486 = 384 096 = somme AM NLP 384 098 (dont 1 922 sur AM vide, ecart 2 EUR d arrondi) OK ; props SM 344 + incremental 84 = 428 OK ; NA seule 4 017 304 + OOF 298 452 = 4 315 756 OK.
 // --- historique run precedent --- // verifie 2026-09-27 08:16 UTC (Athena holidu_homes.revenue : SUM(net_e_gmv), reporting_date in [2026-07-01, 2026-10-01), focus_area = 'Focus Area FR Nouvelle-Aquitaine' - NA seule. Replique la tuile Net eGMV this quarter du dashboard Looker 854. Fraicheur : MAX(reporting_date) revenue = 2026-09-27 (NOUVELLE date) mais snapshot apartment_history TOUJOURS a 2026-09-26 (inchange vs run precedent) -> tous les comptages de proprietes (AM et SM) sont normalement identiques, seuls les eGMV bougent. Pas de masquage PII ce run. Valeurs : area 4 003 915 (+13 015) ; AM existing Braz 1 172 802 (+7 728), Clemenceau 968 796 (+2 103), Millan 871 420 (+4 839), Dicharry 852 572 (-94, re-attribution) ; AM NLP Braz 195 765 (+531), Clemenceau 52 534 (+1 314), Dicharry 96 936 (+94), Millan 34 444 (+180) ; props AM Braz 197, Dicharry 97, Clemenceau 68, Millan 37 (TOUS inchanges, snapshot identique) ; SM eGMV Sibrac 75 669 (+151), Monnier 62 987 (+14), Sellier 61 820 (+201), Ricbourg 49 386 (inchange), Kouame 39 821 (+370), Bouchereau 27 534 (+92) ; props SM Monnier 74, Ricbourg 74, Sellier 66, Kouame 57, Sibrac 42, Bouchereau 31 (TOUS inchanges) ; incremental eGMV 64 297 (+1 292), props 84 (inchange). Controles : eGMV NLP SM 317 217 + incremental 64 297 = 381 514 = somme AM NLP 381 515 (dont 1 835 sur AM vide, ecart 1 EUR d arrondi) OK ; props SM 344 + incremental 84 = 428 OK ; NA seule 4 003 915 + OOF 296 458 = 4 300 373 OK.
