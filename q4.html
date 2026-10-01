@@ -1,0 +1,906 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Suivi Bonus Q4 2026 — Area NA</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;600&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.5.0/dist/chart.umd.js" integrity="sha384-iU8HYtnGQ8Cy4zl7gbNMOhsDTTKX02BTXptVP/vqAWIaTfM7isw76iyZCsjL2eVi" crossorigin="anonymous"></script>
+<style>
+  :root {
+    color-scheme: light;
+    --teal: #00809D;
+    --teal-light: #E1F5EE;
+    --teal-mid: #9FE1CB;
+    --navy: #024251;
+    --navy-mid: #1a4a5e;
+    --blue: #54CEEA;
+    --blue-light: #E6F1FB;
+    --amber: #BA7517;
+    --amber-light: #FAEEDA;
+    --red: #E24B4A;
+    --red-light: #FCEBEB;
+    --green: #1a5c2e;
+    --green-light: #d4edda;
+    --gray: #f4f3f0;
+    --gray-mid: #b4b2a9;
+    --text: #1a1a18;
+    --text-muted: #6b6b65;
+    --border: rgba(0,0,0,0.08);
+    --radius: 12px;
+    --radius-sm: 8px;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; font-weight: 300; background: #FAF9F8; color: #2B2926; min-height: 100vh; padding: 32px 24px; }
+  .page { max-width: 1040px; margin: 0 auto; }
+
+  /* HEADER */
+  .header { background: var(--navy); border-radius: 16px; padding: 28px 32px; margin-bottom: 24px; display: flex; justify-content: space-between; align-items: flex-start; gap: 16px; }
+  .header h1 { color: #fff; font-size: 22px; font-weight: 600; margin-bottom: 6px; }
+  .header p { color: #7bb8c8; font-size: 13px; }
+  .date-badge { background: #fff3cd; border: 1px solid #f0c040; border-radius: var(--radius-sm); padding: 10px 16px; text-align: center; font-size: 12px; color: #7a5800; white-space: nowrap; flex-shrink: 0; }
+  .date-badge strong { display: block; font-size: 14px; font-weight: 600; }
+  .last-update { background: #e8edf2; color: #3a4a5a; font-size: 11px; padding: 4px 10px; border-radius: 12px; margin-top: 6px; display: inline-block; }
+
+  .section-label { font-size: 11px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: var(--text-muted); margin-bottom: 10px; padding-left: 4px; }
+
+  /* MONTH CARDS */
+  .months-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-bottom: 24px; }
+  .month-card { background: #fff; border: 1px solid var(--border); border-radius: var(--radius); padding: 16px; text-align: center; }
+  .month-card .label { font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.06em; color: var(--text-muted); margin-bottom: 8px; }
+  .month-card .amount { font-size: 20px; font-weight: 600; color: var(--text); margin-bottom: 2px; font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; }
+  .month-card .pct { font-size: 12px; color: var(--text-muted); margin-bottom: 10px; }
+  .bar-wrap { background: #eee; border-radius: 4px; height: 5px; overflow: hidden; margin-bottom: 8px; }
+  .bar-fill { height: 100%; border-radius: 4px; transition: width 0.6s ease; }
+  .month-card .status { font-size: 11px; color: var(--text-muted); }
+
+  /* TABS */
+  .tabs { display: flex; gap: 8px; margin-bottom: 16px; flex-wrap: wrap; }
+  .tab { padding: 8px 20px; border-radius: 20px; font-size: 13px; font-weight: 500; cursor: pointer; border: 1.5px solid transparent; transition: all 0.2s; background: #fff; color: var(--text-muted); border-color: var(--border); }
+  .tab.active { background: var(--navy); color: #fff; border-color: var(--navy); }
+  .tab:not(.active):hover { border-color: var(--navy); color: var(--navy); }
+
+  /* TABLE */
+  .table-wrap { background: #fff; border: 1px solid var(--border); border-radius: var(--radius); overflow: hidden; margin-bottom: 24px; }
+  table { width: 100%; border-collapse: collapse; }
+  thead tr { background: var(--navy); }
+  thead th { color: #9cc8d5; font-weight: 500; padding: 12px 14px; text-align: right; font-size: 11px; text-transform: uppercase; letter-spacing: 0.05em; }
+  thead th:first-child { text-align: left; }
+  tbody tr { border-top: 1px solid var(--border); transition: background 0.15s; }
+  tbody tr:hover { background: #fafaf8; }
+  tbody td { padding: 14px 14px; font-size: 13px; text-align: right; color: var(--text); }
+  tbody td:first-child { text-align: left; font-weight: 600; font-size: 14px; }
+  .mono { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; font-size: 13px; }
+
+  /* NLP / SM header style */
+  thead.sm-thead tr { background: #064e3b; }
+  thead.sm-thead th { color: #a7f3d0; }
+
+  .badge { display: inline-flex; flex-direction: column; align-items: center; padding: 5px 12px; border-radius: 20px; font-size: 12px; font-weight: 600; line-height: 1.4; }
+  .badge span { font-size: 11px; font-weight: 400; }
+  .badge-pct { background: #e8edf2; color: #3a4a5a; }
+  .badge-advance { background: var(--green-light); color: var(--green); }
+  .badge-ok { background: var(--amber-light); color: var(--amber); }
+  .badge-retard { background: var(--red-light); color: var(--red); }
+
+  /* NLP EXPLAINER */
+  .nlp-explainer { background: #f0fdf4; border: 1px solid #bbf7d0; border-radius: var(--radius); padding: 14px 18px; margin-bottom: 18px; display: flex; gap: 14px; align-items: flex-start; }
+  .nlp-explainer-icon { font-size: 20px; flex-shrink: 0; }
+  .nlp-explainer h3 { font-size: 14px; font-weight: 600; color: #065f46; margin-bottom: 3px; }
+  .nlp-explainer p { font-size: 12px; color: #047857; line-height: 1.5; }
+  .nlp-explainer .ref { font-size: 11px; color: #6b7280; margin-top: 3px; font-style: italic; }
+  .prov-flag { background: #FAEEDA; border: 1px solid #f0c040; border-radius: var(--radius); padding: 10px 16px; margin-bottom: 18px; font-size: 12px; color: #7a5800; }
+  .prov-flag strong { color: #6a4a00; }
+
+  /* CURVE CANVAS */
+  .curve-wrap { background: #fff; border: 1px solid var(--border); border-radius: var(--radius); padding: 18px 20px; margin-bottom: 18px; }
+  .curve-wrap h3 { font-size: 13px; font-weight: 600; color: var(--navy); margin-bottom: 12px; }
+  canvas#nlpCurve { display: block; width: 100%; }
+
+  /* SM SUB-SECTION */
+  .section-divider { display:flex; align-items:center; gap:10px; margin: 28px 0 16px; }
+  .section-divider .stick { background: #064e3b; width: 4px; height: 24px; border-radius: 2px; flex-shrink:0 }
+  .section-divider .title { font-size: 15px; font-weight: 700; color: var(--text); }
+  .section-divider .sub { font-size: 12px; color: var(--text-muted); margin-top: 1px; }
+
+  .am-section-divider .stick { background: #0ea5e9 !important; }
+
+  /* LEGEND */
+  .legend { display: flex; gap: 16px; flex-wrap: wrap; margin-bottom: 24px; font-size: 12px; color: var(--text-muted); align-items: center; padding-left: 4px; }
+  .legend-item { display: flex; align-items: center; gap: 6px; }
+  .dot { width: 10px; height: 10px; border-radius: 50%; }
+
+  .footer-note { font-size: 11px; color: var(--gray-mid); text-align: center; margin-top: 8px; line-height: 1.6; }
+
+  .am-name-sub { font-size: 11px; font-weight: 400; color: var(--text-muted); display: block; }
+
+  /* Panel */
+  .panel { display: none; }
+  .panel.active { display: block; }
+
+  /* EVOLUTION TAB */
+  .chart-wrap { background: #fff; border: 1px solid var(--border); border-radius: var(--radius); padding: 20px; margin-bottom: 20px; }
+  .chart-wrap h3 { font-size: 14px; font-weight: 600; color: var(--navy); margin-bottom: 4px; }
+  .chart-wrap .subtitle { font-size: 12px; color: var(--text-muted); margin-bottom: 16px; }
+  .chart-canvas { width: 100%; height: 280px; position: relative; }
+  .empty-state { background: #fff; border: 1px dashed var(--gray-mid); border-radius: var(--radius); padding: 40px 20px; text-align: center; color: var(--text-muted); font-size: 13px; }
+  .empty-state strong { display: block; color: var(--text); font-size: 14px; margin-bottom: 6px; }
+  .snapshot-table-wrap { background: #fff; border: 1px solid var(--border); border-radius: var(--radius); overflow: hidden; margin-bottom: 20px; }
+  .snapshot-table-wrap h3 { padding: 16px 20px; font-size: 14px; font-weight: 600; color: var(--navy); background: #fafaf8; border-bottom: 1px solid var(--border); }
+  .snapshot-table { font-size: 12px; }
+  .snapshot-table th, .snapshot-table td { padding: 10px 12px; text-align: right; border-bottom: 1px solid var(--border); }
+  .snapshot-table th { background: var(--navy); color: #9cc8d5; font-weight: 500; font-size: 11px; text-transform: uppercase; }
+  .snapshot-table th:first-child, .snapshot-table td:first-child { text-align: left; font-weight: 600; }
+  .delta-cell { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; }
+  .delta-positive { color: var(--green); }
+  .delta-negative-mild { color: var(--amber); }
+  .delta-negative-strong { color: var(--red); }
+
+  /* TOTAL ROW */
+  tbody tr.total-row { background: #eef7f3; border-top: 2px solid var(--teal); }
+  tbody tr.total-row:hover { background: #e4f2ec; }
+  tbody tr.total-row td:first-child { color: var(--teal); text-transform: uppercase; font-size: 12px; letter-spacing: 0.04em; }
+  tbody tr.total-row td { font-weight: 600; }
+
+  /* AREA SUMMARY */
+  .area-summary { background: #fff; border: 1px solid var(--border); border-left: 4px solid var(--teal); border-radius: var(--radius); padding: 18px 20px; margin-bottom: 24px; }
+  .area-summary h3 { font-size: 14px; font-weight: 700; color: var(--navy); margin-bottom: 3px; }
+  .area-summary .as-sub { font-size: 11px; color: var(--text-muted); margin-bottom: 14px; }
+  .as-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; }
+  .as-card { background: #f7faf9; border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 12px 14px; }
+  .as-card .as-label { font-size: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; color: var(--text-muted); margin-bottom: 8px; }
+  .as-card .as-line { display: flex; justify-content: space-between; font-size: 12px; margin-bottom: 3px; }
+  .as-card .as-line .k { color: var(--text-muted); }
+  .as-card .as-line .v { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; font-weight: 600; color: var(--text); }
+  .as-card .as-goal .v { color: var(--navy); }
+  .as-card .as-pace .v { color: var(--blue); }
+  .as-card.combined { background: #eef7f3; border-color: var(--teal-mid); }
+  @media (max-width: 760px) { .as-grid { grid-template-columns: repeat(2, 1fr); } }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <!-- HEADER -->
+  <div class="header">
+    <div>
+      <h1>🏠 Suivi Bonus Q4 2026 — Area NA</h1>
+      <p>AM + SM Team · Nouvelle-Aquitaine + OTHER · 1er octobre → 31 décembre · target Area 3 820 000 €</p>
+      <span class="last-update" id="last-update">Dernière mise à jour : —</span>
+    </div>
+    <div class="date-badge">
+      <strong id="today-label">—</strong>
+      <span id="mois-progress">Octobre en cours</span>
+    </div>
+  </div>
+
+  <!-- MONTHLY TARGETS -->
+  <p class="section-label" id="months-label">Répartition mensuelle de la target Area · Total Q4 : 3 820 000 €</p>
+  <div class="months-grid">
+    <div class="month-card">
+      <div class="label">Octobre</div>
+      <div class="amount" id="m1-amount">—</div>
+      <div class="pct" id="m1-pct">—</div>
+      <div class="bar-wrap"><div class="bar-fill" id="m1-bar" style="background:var(--blue)"></div></div>
+      <div class="status" id="m1-status">En cours...</div>
+    </div>
+    <div class="month-card">
+      <div class="label">Novembre</div>
+      <div class="amount" id="m2-amount">—</div>
+      <div class="pct" id="m2-pct">—</div>
+      <div class="bar-wrap"><div class="bar-fill" id="m2-bar" style="width:0%;background:var(--navy)"></div></div>
+      <div class="status" id="m2-status">À venir</div>
+    </div>
+    <div class="month-card">
+      <div class="label">Décembre</div>
+      <div class="amount" id="m3-amount">—</div>
+      <div class="pct" id="m3-pct">—</div>
+      <div class="bar-wrap"><div class="bar-fill" id="m3-bar" style="width:0%;background:var(--navy)"></div></div>
+      <div class="status" id="m3-status">À venir</div>
+    </div>
+  </div>
+
+  <!-- TABS -->
+  <div class="tabs">
+    <div class="tab active" onclick="switchTab('am')">👤 AM — Existing + NLP</div>
+    <div class="tab" onclick="switchTab('sm')">🤝 SM — NLP</div>
+    <div class="tab" onclick="switchTab('evolution')">📈 Évolution</div>
+    <div class="tab" onclick="switchTab('area')">🌍 Area</div>
+  </div>
+
+  <!-- AREA PANEL -->
+  <div class="panel" id="panel-area">
+
+    <div class="area-summary">
+      <h3>🎯 Total Area — objectif vs attendu au pace</h3>
+      <p class="as-sub" id="area-summary-sub">—</p>
+      <div class="as-grid" id="area-summary-grid"></div>
+    </div>
+
+    <p class="section-label" style="margin-top:8px;">💶 eGMV Area — par flux</p>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Flux eGMV</th>
+            <th>Target Q4</th>
+            <th>Pace attendu<br><span style="font-size:10px;opacity:.7;text-transform:none">au jour J</span></th>
+            <th>Net eGMV actuel</th>
+            <th>% vs Target</th>
+            <th>Achievement vs Pace</th>
+          </tr>
+        </thead>
+        <tbody id="area-egmv-tbody"></tbody>
+      </table>
+    </div>
+
+    <p class="section-label" style="margin-top:8px;">🏠 Volume propriétés Area</p>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Volume</th>
+            <th>Target Q4</th>
+            <th>Pace attendu<br><span style="font-size:10px;opacity:.7;text-transform:none">au jour J</span></th>
+            <th>Actuel</th>
+            <th>% vs Target</th>
+            <th>Achievement vs Pace</th>
+          </tr>
+        </thead>
+        <tbody id="area-props-tbody"></tbody>
+      </table>
+    </div>
+    <p class="footer-note" id="allarea-footnote"></p>
+  </div>
+
+  <!-- AM PANEL -->
+  <div class="panel active" id="panel-am">
+
+    <div class="prov-flag"><strong>Q4 : on compte des euros par propriété.</strong> Target AM = existing + NLP, NA + OTHER (3 820 000 € Area, c'est ce chiffre qui compte pour le bonus). Objectif NA : 947 € → 1 198 € d'eGMV existing par propriété (+26,5 %).</div>
+
+    <p class="section-label" style="margin-top:0;">📦 Existing — Net eGMV (AM)</p>
+
+    <div class="nlp-explainer" style="background:#EAF6F8;border-color:#9FE1CB;">
+      <div class="nlp-explainer-icon">📐</div>
+      <div>
+        <h3 style="color:#024251">Courbe pace Existing Q4 — légèrement front-loaded</h3>
+        <p style="color:#00809D" id="existing-explainer">—</p>
+        <p class="ref">Source : Athena holidu_homes.revenue, réalisé Q4-2025 NA + OTHER (oct 542 781 € · nov 532 700 € · déc 469 771 €) ; seule la forme % est reprise.</p>
+      </div>
+    </div>
+
+    <div class="curve-wrap">
+      <h3>🔵 Courbe de pace Existing Q4 — Position d'aujourd'hui (🔵)</h3>
+      <canvas id="existingCurve" height="240"></canvas>
+    </div>
+
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Account Manager</th>
+            <th>Target Q4<br><span style="font-size:10px;opacity:.7;text-transform:none">parc 15/09 · €/prop cible</span></th>
+            <th>Pace attendu<br><span style="font-size:10px;opacity:.7;text-transform:none">au jour J</span></th>
+            <th>Net eGMV actuel<br><span style="font-size:10px;opacity:.7;text-transform:none">€/prop actuel</span></th>
+            <th>% vs Target</th>
+            <th>Achievement vs Pace</th>
+          </tr>
+        </thead>
+        <tbody id="existing-tbody"></tbody>
+      </table>
+    </div>
+    <div class="legend">
+      <div class="legend-item"><div class="dot" style="background:var(--red)"></div> Retard &gt;15%</div>
+      <div class="legend-item"><div class="dot" style="background:var(--amber)"></div> Légèrement en retard</div>
+      <div class="legend-item"><div class="dot" style="background:var(--teal)"></div> En avance ✅</div>
+    </div>
+    <p class="footer-note" id="existing-footnote"></p>
+
+    <div class="nlp-explainer">
+      <div class="nlp-explainer-icon">📐</div>
+      <div>
+        <h3>Courbe NLP Q4 — back-loaded</h3>
+        <p id="nlp-explainer">—</p>
+        <p class="ref">Source : Athena holidu_homes.revenue, eGMV Q4-2025 des propriétés publiées en Q4-2025, NA + OTHER (oct 36 845 € · nov 97 389 € · déc 126 897 €) ; seule la forme % est reprise et appliquée au target NLP 2026 (361 000 €).</p>
+      </div>
+    </div>
+
+    <div class="curve-wrap">
+      <h3>🔵 Courbe de pace NLP Q4 — Position d'aujourd'hui (🔵)</h3>
+      <canvas id="nlpCurve" height="240"></canvas>
+    </div>
+
+    <div class="section-divider am-section-divider">
+      <div class="stick"></div>
+      <div>
+        <div class="title">🆕 Account Managers — NLP</div>
+        <div class="sub">Net eGMV NLP + nouvelles propriétés · NA + OTHER</div>
+      </div>
+    </div>
+
+    <p class="section-label" style="margin-top:8px;">💶 Account Managers — Net eGMV NLP</p>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Account Manager</th>
+            <th>Target NLP Q4</th>
+            <th>Pace attendu<br><span style="font-size:10px;opacity:.7;text-transform:none">courbe NLP</span></th>
+            <th>Net eGMV actuel</th>
+            <th>% vs Target</th>
+            <th>Achievement vs Pace</th>
+          </tr>
+        </thead>
+        <tbody id="nlp-tbody"></tbody>
+      </table>
+    </div>
+
+    <p class="section-label" style="margin-top:8px;">💼 Account Managers — Target totale (existing + NLP) <span style="text-transform:none;font-weight:400;color:#6b7280">· c'est ce chiffre qui compte pour le bonus</span></p>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Account Manager</th>
+            <th>Target totale Q4</th>
+            <th>Pace attendu<br><span style="font-size:10px;opacity:.7;text-transform:none">existing + NLP</span></th>
+            <th>Net eGMV actuel</th>
+            <th>% vs Target</th>
+            <th>Achievement vs Pace</th>
+          </tr>
+        </thead>
+        <tbody id="am-total-tbody"></tbody>
+      </table>
+    </div>
+
+    <p class="section-label" style="margin-top:8px;">🆕 Nouvelles propriétés attendues <span style="text-transform:none;font-weight:400;color:#6b7280">· à titre indicatif · goal Area 368 (338 NA + 30 OTHER)</span></p>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Account Manager</th>
+            <th>Target props Q4</th>
+            <th>Pace attendu<br><span style="font-size:10px;opacity:.7;text-transform:none">au jour J</span></th>
+            <th>Props actuelles</th>
+            <th>% Target</th>
+            <th>Achievement vs Pace</th>
+          </tr>
+        </thead>
+        <tbody id="am-props-tbody"></tbody>
+      </table>
+    </div>
+
+  </div>
+
+  <!-- SM PANEL -->
+  <div class="panel" id="panel-sm">
+
+    <div class="nlp-explainer">
+      <div class="nlp-explainer-icon">📐</div>
+      <div>
+        <h3>Sales Managers — NLP (propriétés + eGMV)</h3>
+        <p>338 NLP · 337 000 € · 997 € par NLP en moyenne. Propriétés : pace linéaire par mois selon le dispatch individuel (oct 125 · nov 122 · déc 91). eGMV NLP : même courbe back-loaded que les AM (graphe dans l'onglet AM).</p>
+        <p class="ref">Ligne « Incrémental » = NLP OTHER rentrés par l'équipe INCREMENTAL SDR (30 NLP · 24 000 €) + contributions sans target individuelle, remontée au Total SM.</p>
+      </div>
+    </div>
+
+    <p class="section-label" style="margin-top:8px;">📋 Sales Managers — Nombre de propriétés signées <span style="text-transform:none;font-weight:400;color:#6b7280">· pace linéaire par mois (target individuel par mois)</span></p>
+    <div class="table-wrap">
+      <table>
+        <thead class="sm-thead">
+          <tr>
+            <th>Sales Manager</th>
+            <th>Target Q4<br><span style="font-size:10px;opacity:.7;text-transform:none">oct / nov / déc</span></th>
+            <th>Pace attendu<br><span style="font-size:10px;opacity:.7;text-transform:none">au jour J</span></th>
+            <th>Properties actuelles</th>
+            <th>% Target</th>
+            <th>Achievement vs Pace</th>
+          </tr>
+        </thead>
+        <tbody id="sm-props-tbody"></tbody>
+      </table>
+    </div>
+
+    <p class="section-label" style="margin-top:8px;">💶 Sales Managers — Net eGMV NLP</p>
+    <div class="table-wrap">
+      <table>
+        <thead class="sm-thead">
+          <tr>
+            <th>Sales Manager</th>
+            <th>Target eGMV Q4<br><span style="font-size:10px;opacity:.7;text-transform:none">€/NLP cible</span></th>
+            <th>Pace attendu<br><span style="font-size:10px;opacity:.7;text-transform:none">courbe NLP</span></th>
+            <th>Net eGMV actuel</th>
+            <th>% vs Target</th>
+            <th>Achievement vs Pace</th>
+          </tr>
+        </thead>
+        <tbody id="sm-egmv-tbody"></tbody>
+      </table>
+    </div>
+
+    <div class="legend">
+      <div class="legend-item"><div class="dot" style="background:var(--red)"></div> Retard &gt;15%</div>
+      <div class="legend-item"><div class="dot" style="background:var(--amber)"></div> Légèrement en retard</div>
+      <div class="legend-item"><div class="dot" style="background:var(--teal)"></div> En avance ✅</div>
+    </div>
+    <p class="footer-note" id="nlp-footnote"></p>
+  </div>
+
+  <!-- EVOLUTION PANEL -->
+  <div class="panel" id="panel-evolution">
+    <div class="nlp-explainer" style="background:#fef9e7;border-color:#f0d878;">
+      <div class="nlp-explainer-icon">📸</div>
+      <div>
+        <h3 style="color:#7a5800">Snapshot hebdomadaire — chaque mercredi</h3>
+        <p style="color:#7a5800">Suivez l'écart en % vs le pace attendu de chaque AM, semaine après semaine.</p>
+      </div>
+    </div>
+
+    <div class="chart-wrap">
+      <h3>📦 Existing — Écart vs pace (%)</h3>
+      <p class="subtitle">0% = au pace · positif = en avance · négatif = en retard</p>
+      <div class="chart-canvas"><canvas id="chart-existing"></canvas></div>
+    </div>
+
+    <div class="chart-wrap">
+      <h3>🆕 NLP AM — Écart vs pace (%)</h3>
+      <p class="subtitle">0% = au pace · positif = en avance · négatif = en retard</p>
+      <div class="chart-canvas"><canvas id="chart-nlp"></canvas></div>
+    </div>
+
+    <div class="snapshot-table-wrap" id="snapshot-table-existing-wrap">
+      <h3>📦 Existing — Historique des snapshots (écart vs pace)</h3>
+      <div style="overflow-x:auto"><table class="snapshot-table" id="snapshot-table-existing"></table></div>
+    </div>
+
+    <div class="snapshot-table-wrap" id="snapshot-table-nlp-wrap">
+      <h3>🆕 NLP AM — Historique des snapshots (écart vs pace)</h3>
+      <div style="overflow-x:auto"><table class="snapshot-table" id="snapshot-table-nlp"></table></div>
+    </div>
+
+    <div id="empty-evolution" class="empty-state" style="display:none;">
+      <strong>Pas encore de snapshot hebdomadaire</strong>
+      Le premier snapshot sera pris le mercredi 7 octobre. Les données s'accumuleront chaque semaine ici.
+    </div>
+  </div>
+
+  <p class="footer-note" style="margin-top:24px;">© Holidu GmbH | Confidential</p>
+</div>
+
+<script>
+// ─── CONFIG Q4 2026 ─────────────────────────────────────────────────────────
+// Source targets : Target_Q4_NA_v4.pdf (Claire Philipp, Area Lead). Ne JAMAIS modifier aux refresh.
+const Q_START = new Date('2026-10-01');
+const TODAY = new Date();
+const LAST_UPDATE = '2026-10-01T09:00:00';
+const D_M1 = 31, D_M2 = 30, D_M3 = 31; // oct, nov, déc
+const Q_DAYS = D_M1 + D_M2 + D_M3;     // 92
+const MONTH_NAMES = ['Octobre', 'Novembre', 'Décembre'];
+
+// Targets Area (frozen) : NA 3 595 730 € + OTHER 224 270 € = 3 820 000 € (bonus).
+const AREA_TARGET_TOTAL = 3820000;
+const AREA_TARGET_NA = 3595730;
+const AREA_TARGET_OTHER = 224270;
+const AREA_PARC_NA = 2720;             // propriétés publiées NA au 15/09
+const AREA_EUR_PROP_TARGET_NA = 1198;  // €/prop existing cible NA (947 € en Q4-2025)
+const AREA_EX_TARGET_NA = 3259000;     // eGMV existing NA attendu
+
+// ─── FORMES DE PACE (réalisé Q4-2025, Athena, NA + OTHER) — seules les % comptent ───
+const EX_REF_EUR  = [542781, 532700, 469771];  // existing (publié avant 01/10/2025)
+const NLP_REF_EUR = [36845, 97389, 126897];    // NLP (publié en Q4-2025)
+const PROPS_REF   = [125, 122, 91];             // dispatch NLP retenu (PDF v4)
+function shape(a) { const t = a[0] + a[1] + a[2]; return [a[0] / t, a[1] / t, a[2] / t]; }
+const EX_DIST = shape(EX_REF_EUR), NLP_DIST = shape(NLP_REF_EUR), PROPS_DIST = shape(PROPS_REF);
+
+function daysElapsedQ(date) {
+  const d = date || TODAY;
+  const diff = Math.floor((d - Q_START) / (1000 * 60 * 60 * 24)) + 1; // J1 = 1er oct
+  return Math.min(Math.max(diff, 1), Q_DAYS);
+}
+function dateForJ(j) { const d = new Date(Q_START); d.setDate(d.getDate() + (j - 1)); return d; }
+function fmtJDate(j) { return new Intl.DateTimeFormat('fr-FR', { day: 'numeric', month: 'short' }).format(dateForJ(j)); }
+
+// Pace générique : linéaire dans chaque mois, pondéré par la forme mensuelle
+function paceByDay(dist, d) {
+  d = Math.min(Math.max(d, 0), Q_DAYS);
+  if (d <= D_M1) return dist[0] * (d / D_M1);
+  if (d <= D_M1 + D_M2) return dist[0] + dist[1] * ((d - D_M1) / D_M2);
+  return dist[0] + dist[1] + dist[2] * ((d - D_M1 - D_M2) / D_M3);
+}
+function existingPace(date) { return paceByDay(EX_DIST, daysElapsedQ(date)); }
+function existingPaceByDay(d) { return paceByDay(EX_DIST, d); }
+function nlpPace(d) { return paceByDay(NLP_DIST, d); }
+function areaPropsPace(date) { return paceByDay(PROPS_DIST, daysElapsedQ(date)); }
+
+// ─── DATA — targets figés (PDF v4) · actuals mis à jour par la tâche quotidienne ───
+// AM = NA + OTHER (Mariana porte le parc OTHER : 230 props, 200 000 € existing, 24 000 € NLP).
+const AMS_EXISTING = [
+  { name: 'M. Braz',        email: 'mariana.braz',      parc: 920, target: 978000, egmv: 0 },
+  { name: 'A. Dicharry',    email: 'amandine.dicharry', parc: 713, target: 849000, egmv: 0 },
+  { name: 'R. Clemenceau',  email: 'remi.clemenceau',   parc: 747, target: 845000, egmv: 0 },
+  { name: 'L. Millan',      email: 'laetitia.millan',   parc: 570, target: 787000, egmv: 0 },
+];
+
+const AMS_NLP = [
+  { name: 'M. Braz',        email: 'mariana.braz',      target: 130000, egmv: 0 },
+  { name: 'A. Dicharry',    email: 'amandine.dicharry', target: 107000, egmv: 0 },
+  { name: 'L. Millan',      email: 'laetitia.millan',   target: 63000,  egmv: 0 },
+  { name: 'R. Clemenceau',  email: 'remi.clemenceau',   target: 61000,  egmv: 0 },
+];
+
+const AMS_PROPS = [
+  { name: 'M. Braz',        email: 'mariana.braz',      target: 129, actual: 0 },
+  { name: 'A. Dicharry',    email: 'amandine.dicharry', target: 112, actual: 0 },
+  { name: 'R. Clemenceau',  email: 'remi.clemenceau',   target: 66,  actual: 0 },
+  { name: 'L. Millan',      email: 'laetitia.millan',   target: 61,  actual: 0 },
+];
+const AREA_NLP_PROPS_GOAL = 368; // 338 NA + 30 OTHER
+
+// SM — propsMonthly = [oct, nov, déc] (dispatch PDF v4)
+const SMS = [
+  { name: 'J. Bouchereau',   email: 'jonathan.bouchereau',  propsTarget: 61, propsActual: 0, propsMonthly: [24, 22, 15], egmvTarget: 73000, egmvActual: 0 },
+  { name: 'G. Sibrac',       email: 'gauthier.sibrac',      propsTarget: 68, propsActual: 0, propsMonthly: [26, 23, 19], egmvTarget: 72000, egmvActual: 0 },
+  { name: 'N. Sellier',      email: 'naomi.sellier',        propsTarget: 71, propsActual: 0, propsMonthly: [27, 24, 20], egmvTarget: 71000, egmvActual: 0 },
+  { name: 'A. Monnier',      email: 'arthur.monnier',       propsTarget: 66, propsActual: 0, propsMonthly: [22, 26, 18], egmvTarget: 61000, egmvActual: 0 },
+  { name: 'L. Kouamé',       email: 'loic.kouame',          propsTarget: 54, propsActual: 0, propsMonthly: [19, 21, 14], egmvTarget: 41000, egmvActual: 0 },
+  { name: 'J. Ricbourg',     email: 'jade.ricbourg',        propsTarget: 18, propsActual: 0, propsMonthly: [7, 6, 5],    egmvTarget: 19000, egmvActual: 0, tag: 'incrémental · 100 % outbound' },
+];
+
+// Ligne "Incrémental" anonyme : 30 NLP OTHER (INCREMENTAL SDR, 24 000 €) + tout SM sans target.
+// Actual = résiduel (total NLP du périmètre − somme des 6 SM ci-dessus).
+const SM_INCREMENTAL = { egmvTarget: 24000, egmvActual: 0, propsTarget: 30, propsActual: 0 };
+
+// ─── RÉEL eGMV AREA (top-down) ───
+// Athena holidu_homes.revenue : SUM(net_e_gmv), reporting_date ∈ [2026-10-01, 2027-01-01).
+// AREA_EGMV_ACTUAL = NA + OOF-Area FR Others (bonus, vs 3 820 000 €) ; _NA = NA seule ; AREA_EX_NA_ACTUAL = existing NA seule.
+const AREA_EGMV_ACTUAL = 0;
+const AREA_EGMV_ACTUAL_NA = 0;
+const AREA_EX_NA_ACTUAL = 0; // init 2026-10-01 : aucune donnée Q4 encore en base (MAX reporting_date = 2026-09-30).
+
+// Properties pace SM : linéaire par mois selon le dispatch individuel
+function propsPace(sm, date) {
+  const d = daysElapsedQ(date);
+  const [m1, m2, m3] = sm.propsMonthly;
+  if (d <= D_M1) return m1 * (d / D_M1);
+  if (d <= D_M1 + D_M2) return m1 + m2 * ((d - D_M1) / D_M2);
+  return m1 + m2 + m3 * ((d - D_M1 - D_M2) / D_M3);
+}
+
+const HISTORY = [];
+
+// ─── UTILS ────────────────────────────────────────────────────────────────────
+function fmt(n) { return new Intl.NumberFormat('fr-FR', { style: 'currency', currency: 'EUR', maximumFractionDigits: 0 }).format(n); }
+function fmtDate(d) { return new Intl.DateTimeFormat('fr-FR', { day: '2-digit', month: '2-digit' }).format(new Date(d)); }
+function pct1(x) { return (x * 100).toFixed(1).replace('.', ',') + '%'; }
+function badgeClass(dp) { if (dp >= 5) return 'badge-advance'; if (dp >= -15) return 'badge-ok'; return 'badge-retard'; }
+function badgeEmoji(dp) { if (dp >= 5) return '✅'; if (dp >= -15) return '⚠️'; return '🔴'; }
+function deltaClass(dp) { if (dp >= 5) return 'delta-positive'; if (dp >= -15) return 'delta-negative-mild'; return 'delta-negative-strong'; }
+function sum(arr, f) { return arr.reduce((a, x) => a + f(x), 0); }
+
+function achCell(delta, pace, isCurrency) {
+  const dp = pace ? (delta / pace) * 100 : 0;
+  const sign = delta >= 0 ? '+' : '';
+  const dTxt = isCurrency ? fmt(Math.round(delta)) : delta.toFixed(1);
+  return `<span class="badge ${badgeClass(dp)}">${sign}${dTxt}<span>${sign}${Math.round(dp)}% vs pace ${badgeEmoji(dp)}</span></span>`;
+}
+function pctCell(actual, target) { return `<span class="badge badge-pct">${target ? Math.round((actual / target) * 100) : 0}%</span>`; }
+function nameCell(p) { return `${p.name}${p.tag ? ` <span class="badge badge-pct" style="padding:2px 8px;font-size:10px">${p.tag}</span>` : ''}<span class="am-name-sub">${p.email}@holidu.com</span>`; }
+
+function renderRow(am, paceRatio) {
+  const pace = am.target * paceRatio;
+  return `<tr>
+    <td>${nameCell(am)}</td>
+    <td class="mono">${fmt(am.target)}</td>
+    <td class="mono">${fmt(Math.round(pace))}</td>
+    <td class="mono">${fmt(am.egmv)}</td>
+    <td>${pctCell(am.egmv, am.target)}</td>
+    <td>${achCell(am.egmv - pace, pace, true)}</td>
+  </tr>`;
+}
+
+function renderExistingRow(am, paceRatio) {
+  const pace = am.target * paceRatio;
+  const tgtProp = Math.round(am.target / am.parc), actProp = Math.round(am.egmv / am.parc);
+  return `<tr>
+    <td>${nameCell(am)}</td>
+    <td class="mono">${fmt(am.target)}<span class="am-name-sub">${am.parc} props · ${fmt(tgtProp)}/prop</span></td>
+    <td class="mono">${fmt(Math.round(pace))}</td>
+    <td class="mono">${fmt(am.egmv)}<span class="am-name-sub">${fmt(actProp)}/prop</span></td>
+    <td>${pctCell(am.egmv, am.target)}</td>
+    <td>${achCell(am.egmv - pace, pace, true)}</td>
+  </tr>`;
+}
+
+function renderAmTotalRow(ex, nlp, paceEx, paceN) {
+  const target = ex.target + nlp.target, actual = ex.egmv + nlp.egmv;
+  const pace = ex.target * paceEx + nlp.target * paceN;
+  return `<tr>
+    <td>${nameCell(ex)}</td>
+    <td class="mono">${fmt(target)}</td>
+    <td class="mono">${fmt(Math.round(pace))}</td>
+    <td class="mono">${fmt(actual)}</td>
+    <td>${pctCell(actual, target)}</td>
+    <td>${achCell(actual - pace, pace, true)}</td>
+  </tr>`;
+}
+
+function renderAmPropsRow(am) {
+  const pace = am.target * areaPropsPace();
+  return `<tr>
+    <td>${nameCell(am)}</td>
+    <td class="mono">${am.target}</td>
+    <td class="mono">${pace.toFixed(1)}</td>
+    <td class="mono"><strong>${am.actual}</strong></td>
+    <td>${pctCell(am.actual, am.target)}</td>
+    <td>${achCell(am.actual - pace, pace, false)}</td>
+  </tr>`;
+}
+
+function renderSmPropsRow(sm) {
+  const pace = propsPace(sm);
+  return `<tr>
+    <td>${nameCell(sm)}</td>
+    <td class="mono">${sm.propsTarget} <span style="font-size:10px;color:#9ca3af">(${sm.propsMonthly.join('/')})</span></td>
+    <td class="mono">${pace.toFixed(1)}</td>
+    <td class="mono"><strong>${sm.propsActual}</strong></td>
+    <td>${pctCell(sm.propsActual, sm.propsTarget)}</td>
+    <td>${achCell(sm.propsActual - pace, pace, false)}</td>
+  </tr>`;
+}
+
+function renderSmEgmvRow(sm, paceRatio) {
+  const pace = sm.egmvTarget * paceRatio;
+  return `<tr>
+    <td>${nameCell(sm)}</td>
+    <td class="mono">${fmt(sm.egmvTarget)}<span class="am-name-sub">${fmt(Math.round(sm.egmvTarget / sm.propsTarget))}/NLP</span></td>
+    <td class="mono">${fmt(Math.round(pace))}</td>
+    <td class="mono">${fmt(sm.egmvActual)}</td>
+    <td>${pctCell(sm.egmvActual, sm.egmvTarget)}</td>
+    <td>${achCell(sm.egmvActual - pace, pace, true)}</td>
+  </tr>`;
+}
+
+function genRow(label, target, pace, actual, isCurrency, cls) {
+  const f = isCurrency ? (v) => fmt(Math.round(v)) : (v) => (Number.isInteger(v) ? v : v.toFixed(1));
+  return `<tr class="${cls || ''}">
+    <td>${label}</td>
+    <td class="mono">${f(target)}</td>
+    <td class="mono">${f(pace)}</td>
+    <td class="mono">${f(actual)}</td>
+    <td>${pctCell(actual, target)}</td>
+    <td>${achCell(actual - pace, pace, isCurrency)}</td>
+  </tr>`;
+}
+const INC_LABEL = 'Incrémental<span class="am-name-sub">NLP OTHER (INCREMENTAL SDR) + hors target individuelle</span>';
+
+function asCard(label, goal, pace, actual, currency, extra) {
+  const f = currency ? (v) => fmt(Math.round(v)) : (v) => (Math.round(v * 10) / 10);
+  const vt = goal ? Math.round((actual / goal) * 100) : 0;
+  return `<div class="as-card ${extra || ''}">
+    <div class="as-label">${label}</div>
+    <div class="as-line as-goal"><span class="k">Goal Q4</span><span class="v">${f(goal)}</span></div>
+    <div class="as-line as-pace"><span class="k">Attendu (pace)</span><span class="v">${f(pace)}</span></div>
+    <div class="as-line"><span class="k">Actuel</span><span class="v">${f(actual)}</span></div>
+    <div class="as-line"><span class="k">% vs goal</span><span class="v">${vt}%</span></div>
+  </div>`;
+}
+
+// ─── CURVE CANVAS ──────────────────────────────────────────────────────────
+function drawPaceCurve(canvasId, paceFn, curveColor) {
+  const canvas = document.getElementById(canvasId);
+  if (!canvas) return;
+  const dayQ = daysElapsedQ();
+  const pr = paceFn(dayQ);
+  const W = canvas.parentElement.clientWidth - 40, H = 240;
+  const dpr = window.devicePixelRatio || 1;
+  canvas.width = W * dpr; canvas.height = H * dpr;
+  canvas.style.width = W + 'px'; canvas.style.height = H + 'px';
+  const ctx = canvas.getContext('2d');
+  ctx.scale(dpr, dpr);
+  const P = { top: 16, right: 16, bottom: 54, left: 52 };
+  const cW = W - P.left - P.right, cH = H - P.top - P.bottom;
+  ctx.fillStyle = '#fff'; ctx.fillRect(0, 0, W, H);
+  [0, 0.25, 0.5, 0.75, 1].forEach(y => {
+    const py = P.top + cH * (1 - y);
+    ctx.strokeStyle = '#f1f5f9'; ctx.lineWidth = 1;
+    ctx.beginPath(); ctx.moveTo(P.left, py); ctx.lineTo(P.left + cW, py); ctx.stroke();
+    ctx.fillStyle = '#9ca3af'; ctx.font = '10px Inter,-apple-system,sans-serif'; ctx.textAlign = 'right';
+    ctx.fillText((y * 100).toFixed(0) + '%', P.left - 6, py + 4);
+  });
+  [1, 15, 31, 46, 61, 76, 92].forEach(d => {
+    const px = P.left + (d / Q_DAYS) * cW;
+    ctx.fillStyle = '#9ca3af'; ctx.font = '10px Inter,-apple-system,sans-serif'; ctx.textAlign = 'center';
+    ctx.fillText('J' + d, px, H - P.bottom + 14);
+    ctx.fillStyle = '#6b7280'; ctx.font = '9px Inter,-apple-system,sans-serif';
+    ctx.fillText(fmtJDate(d), px, H - P.bottom + 28);
+  });
+  [D_M1, D_M1 + D_M2].forEach(d => {
+    const px = P.left + (d / Q_DAYS) * cW;
+    ctx.strokeStyle = '#e5e7eb'; ctx.lineWidth = 1; ctx.setLineDash([2, 3]);
+    ctx.beginPath(); ctx.moveTo(px, P.top); ctx.lineTo(px, P.top + cH); ctx.stroke();
+    ctx.setLineDash([]);
+  });
+  ctx.beginPath(); ctx.strokeStyle = curveColor; ctx.lineWidth = 2.5;
+  for (let d = 0; d <= Q_DAYS; d++) {
+    const x = P.left + (d / Q_DAYS) * cW, y = P.top + cH * (1 - paceFn(d));
+    d === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y);
+  }
+  ctx.stroke();
+  const xt = P.left + (dayQ / Q_DAYS) * cW, yt = P.top + cH * (1 - pr);
+  ctx.strokeStyle = 'rgba(0,128,157,0.4)'; ctx.lineWidth = 1.5; ctx.setLineDash([3, 3]);
+  ctx.beginPath(); ctx.moveTo(xt, P.top); ctx.lineTo(xt, P.top + cH); ctx.stroke();
+  ctx.setLineDash([]);
+  ctx.beginPath(); ctx.arc(xt, yt, 6, 0, Math.PI * 2);
+  ctx.fillStyle = '#54CEEA'; ctx.fill();
+  ctx.strokeStyle = '#fff'; ctx.lineWidth = 2; ctx.stroke();
+  const lx = xt + 10 > P.left + cW - 95 ? xt - 100 : xt + 10;
+  ctx.fillStyle = '#00809D'; ctx.font = '600 9.5px Inter,-apple-system,sans-serif'; ctx.textAlign = 'left';
+  ctx.fillText('Auj. J' + dayQ, lx, yt - 7);
+  ctx.fillText('Pace=' + (pr * 100).toFixed(1) + '%', lx, yt + 7);
+  ctx.strokeStyle = '#e5e7eb'; ctx.lineWidth = 1;
+  ctx.beginPath(); ctx.moveTo(P.left, P.top); ctx.lineTo(P.left, P.top + cH); ctx.lineTo(P.left + cW, P.top + cH); ctx.stroke();
+}
+function drawCurve() {
+  drawPaceCurve('existingCurve', existingPaceByDay, '#00809D');
+  drawPaceCurve('nlpCurve', nlpPace, '#024251');
+}
+
+// ─── EVOLUTION ────────────────────────────────────────────────────────────────
+const HIST_AM_COLORS = { 'mariana.braz': '#FD937B', 'remi.clemenceau': '#54CEEA', 'amandine.dicharry': '#024251', 'laetitia.millan': '#74CFA9' };
+function buildSnapshotTable(group, ams) {
+  const el = document.getElementById(`snapshot-table-${group}`);
+  if (HISTORY.length === 0) return;
+  let html = '<thead><tr><th>AM</th>';
+  HISTORY.forEach(s => { html += `<th>${fmtDate(s.date)}</th>`; });
+  html += '</tr></thead><tbody>';
+  ams.forEach(am => {
+    html += `<tr><td>${am.name}</td>`;
+    HISTORY.forEach(s => {
+      const dp = s[group][am.email];
+      if (dp === undefined || dp === null) html += '<td class="delta-cell">—</td>';
+      else html += `<td class="delta-cell ${deltaClass(dp)}">${dp >= 0 ? '+' : ''}${Math.round(dp)}%</td>`;
+    });
+    html += '</tr>';
+  });
+  el.innerHTML = html + '</tbody>';
+}
+function buildChart(canvasId, group, ams) {
+  if (HISTORY.length === 0 || typeof Chart === 'undefined') return;
+  const ctx = document.getElementById(canvasId).getContext('2d');
+  new Chart(ctx, {
+    type: 'line',
+    data: { labels: HISTORY.map(s => fmtDate(s.date)), datasets: ams.map(am => ({
+      label: am.name, data: HISTORY.map(s => s[group][am.email] ?? null),
+      borderColor: HIST_AM_COLORS[am.email] || '#938F8B', backgroundColor: HIST_AM_COLORS[am.email] || '#938F8B',
+      tension: 0.25, spanGaps: true, pointRadius: 4, borderWidth: 2 })) },
+    options: { responsive: true, maintainAspectRatio: false,
+      plugins: { legend: { position: 'bottom', labels: { font: { size: 11 } } } },
+      scales: { y: { ticks: { callback: (v) => (v >= 0 ? '+' : '') + v + '%' } }, x: { grid: { display: false } } } }
+  });
+}
+function renderEvolution() {
+  if (HISTORY.length === 0) {
+    document.getElementById('empty-evolution').style.display = 'block';
+    document.getElementById('snapshot-table-existing-wrap').style.display = 'none';
+    document.getElementById('snapshot-table-nlp-wrap').style.display = 'none';
+    document.querySelectorAll('#panel-evolution .chart-wrap').forEach(el => el.style.display = 'none');
+    return;
+  }
+  buildSnapshotTable('existing', AMS_EXISTING);
+  buildSnapshotTable('nlp', AMS_NLP);
+  buildChart('chart-existing', 'existing', AMS_EXISTING);
+  buildChart('chart-nlp', 'nlp', AMS_NLP);
+}
+
+// ─── INIT ─────────────────────────────────────────────────────────────────────
+function init() {
+  const dayQ = daysElapsedQ();
+  const paceEx = existingPace();
+  const paceN = nlpPace(dayQ);
+  const paceP = areaPropsPace();
+  const todayStr = TODAY.toLocaleDateString('fr-FR');
+
+  document.getElementById('today-label').textContent = TODAY.toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', year: 'numeric' });
+  const bounds = [0, D_M1, D_M1 + D_M2, Q_DAYS], lens = [D_M1, D_M2, D_M3];
+  const mIdx = dayQ <= D_M1 ? 0 : (dayQ <= D_M1 + D_M2 ? 1 : 2);
+  document.getElementById('mois-progress').textContent = `${MONTH_NAMES[mIdx]} (j${dayQ - bounds[mIdx]}/${lens[mIdx]})`;
+
+  const lu = new Date(LAST_UPDATE);
+  document.getElementById('last-update').textContent =
+    `Dernière mise à jour : ${lu.toLocaleDateString('fr-FR', { day:'2-digit', month:'2-digit', year:'numeric' })} à ${lu.toLocaleTimeString('fr-FR', { hour:'2-digit', minute:'2-digit' })}`;
+
+  // Totaux
+  const exTgt = sum(AMS_EXISTING, a => a.target), exAct = sum(AMS_EXISTING, a => a.egmv);
+  const nlpTgt = sum(AMS_NLP, a => a.target), nlpAct = sum(AMS_NLP, a => a.egmv);
+  const amPropTgt = sum(AMS_PROPS, a => a.target), amPropAct = sum(AMS_PROPS, a => a.actual);
+  const smPropTgt = sum(SMS, s => s.propsTarget), smPropAct = sum(SMS, s => s.propsActual), smPropPace = sum(SMS, s => propsPace(s));
+  const smEgmvTgt = sum(SMS, s => s.egmvTarget), smEgmvAct = sum(SMS, s => s.egmvActual);
+
+  // Cartes mensuelles : target mois = existing × forme existing + NLP × forme NLP
+  for (let i = 0; i < 3; i++) {
+    const amt = exTgt * EX_DIST[i] + nlpTgt * NLP_DIST[i];
+    document.getElementById(`m${i+1}-amount`).textContent = fmt(Math.round(amt));
+    document.getElementById(`m${i+1}-pct`).textContent = `${pct1(amt / (exTgt + nlpTgt))} du Q4`;
+    const elapsed = Math.min(Math.max(dayQ - bounds[i], 0), lens[i]);
+    document.getElementById(`m${i+1}-bar`).style.width = (elapsed / lens[i] * 100) + '%';
+    if (dayQ > bounds[i]) document.getElementById(`m${i+1}-bar`).style.background = 'var(--blue)';
+    document.getElementById(`m${i+1}-status`).textContent =
+      dayQ <= bounds[i] ? 'À venir' : (dayQ >= bounds[i + 1] && i < 2 ? '✅ Mois terminé' : `⏳ En cours (j${elapsed}/${lens[i]})`);
+  }
+  document.getElementById('months-label').textContent =
+    `Répartition mensuelle de la target Area · Total Q4 : ${fmt(exTgt + nlpTgt)} (NA ${fmt(AREA_TARGET_NA)} + OTHER ${fmt(AREA_TARGET_OTHER)})`;
+
+  document.getElementById('existing-explainer').innerHTML =
+    `Forme du réalisé Q4-2025 : <strong>oct ${pct1(EX_DIST[0])} · nov ${pct1(EX_DIST[1])} · déc ${pct1(EX_DIST[2])}</strong>, linéarisée dans chaque mois. Inverse du NLP (back-loaded).`;
+  document.getElementById('nlp-explainer').innerHTML =
+    `L'eGMV des nouvelles propriétés s'accumule au fil du trimestre : <strong>oct ${pct1(NLP_DIST[0])} · nov ${pct1(NLP_DIST[1])} · déc ${pct1(NLP_DIST[2])}</strong>, appliqué au target NLP 2026 (${fmt(nlpTgt)}).`;
+
+  // Tables AM
+  document.getElementById('existing-tbody').innerHTML =
+    AMS_EXISTING.map(am => renderExistingRow(am, paceEx)).join('') +
+    genRow('Total Area', exTgt, exTgt * paceEx, exAct, true, 'total-row');
+  document.getElementById('nlp-tbody').innerHTML =
+    AMS_NLP.map(am => renderRow(am, paceN)).join('') +
+    genRow('Total Area', nlpTgt, nlpTgt * paceN, nlpAct, true, 'total-row');
+  document.getElementById('am-total-tbody').innerHTML =
+    AMS_EXISTING.map(ex => renderAmTotalRow(ex, AMS_NLP.find(n => n.email === ex.email), paceEx, paceN)).join('') +
+    genRow('Total Area', exTgt + nlpTgt, exTgt * paceEx + nlpTgt * paceN, exAct + nlpAct, true, 'total-row');
+  document.getElementById('am-props-tbody').innerHTML =
+    AMS_PROPS.map(renderAmPropsRow).join('') +
+    genRow('Total Area', amPropTgt, amPropTgt * paceP, amPropAct, false, 'total-row');
+
+  // Tables SM
+  const incPropsPace = SM_INCREMENTAL.propsTarget * paceP, incEgmvPace = SM_INCREMENTAL.egmvTarget * paceN;
+  document.getElementById('sm-props-tbody').innerHTML =
+    SMS.map(renderSmPropsRow).join('') +
+    genRow(INC_LABEL, SM_INCREMENTAL.propsTarget, incPropsPace, SM_INCREMENTAL.propsActual, false) +
+    genRow('Total SM', smPropTgt + SM_INCREMENTAL.propsTarget, smPropPace + incPropsPace, smPropAct + SM_INCREMENTAL.propsActual, false, 'total-row');
+  document.getElementById('sm-egmv-tbody').innerHTML =
+    SMS.map(sm => renderSmEgmvRow(sm, paceN)).join('') +
+    genRow(INC_LABEL, SM_INCREMENTAL.egmvTarget, incEgmvPace, SM_INCREMENTAL.egmvActual, true) +
+    genRow('Total SM', smEgmvTgt + SM_INCREMENTAL.egmvTarget, smEgmvTgt * paceN + incEgmvPace, smEgmvAct + SM_INCREMENTAL.egmvActual, true, 'total-row');
+
+  // Area
+  const areaPace = exTgt * paceEx + nlpTgt * paceN;
+  const naShare = AREA_TARGET_NA / AREA_TARGET_TOTAL;
+  const eurPropAct = AREA_EX_NA_ACTUAL / AREA_PARC_NA;
+  document.getElementById('area-summary-sub').textContent =
+    `Jour ${dayQ}/${Q_DAYS} · pace existing ${pct1(paceEx)} · pace NLP ${pct1(paceN)} · pace props ${pct1(paceP)} · au ${todayStr}`;
+  document.getElementById('area-summary-grid').innerHTML =
+    asCard('Σ Net eGMV Area · NA + OTHER (bonus)', AREA_TARGET_TOTAL, areaPace, AREA_EGMV_ACTUAL, true, 'combined') +
+    asCard('Net eGMV NA seule', AREA_TARGET_NA, areaPace * naShare, AREA_EGMV_ACTUAL_NA, true) +
+    asCard('€ / propriété existing NA', AREA_EUR_PROP_TARGET_NA, AREA_EUR_PROP_TARGET_NA * paceEx, eurPropAct, true) +
+    asCard('🏠 Nouvelles propriétés (AM)', AREA_NLP_PROPS_GOAL, AREA_NLP_PROPS_GOAL * paceP, amPropAct, false);
+
+  document.getElementById('area-egmv-tbody').innerHTML =
+    genRow('📦 Existing · AM (bottom-up)', exTgt, exTgt * paceEx, exAct, true) +
+    genRow('🆕 NLP · AM (bottom-up)', nlpTgt, nlpTgt * paceN, nlpAct, true) +
+    genRow('Net eGMV NA seule', AREA_TARGET_NA, areaPace * naShare, AREA_EGMV_ACTUAL_NA, true) +
+    genRow('Σ Net eGMV Area — NA + OTHER (bonus)', AREA_TARGET_TOTAL, areaPace, AREA_EGMV_ACTUAL, true, 'total-row');
+  document.getElementById('area-props-tbody').innerHTML =
+    genRow('🆕 Nouvelles propriétés (AM, publiées)', AREA_NLP_PROPS_GOAL, AREA_NLP_PROPS_GOAL * paceP, amPropAct, false) +
+    genRow('✍️ Propriétés signées (SM + incrémental)', smPropTgt + SM_INCREMENTAL.propsTarget, smPropPace + incPropsPace, smPropAct + SM_INCREMENTAL.propsActual, false, 'total-row');
+  document.getElementById('allarea-footnote').textContent =
+    `Σ Net eGMV Area = Athena holidu_homes.revenue, Focus Area FR Nouvelle-Aquitaine + OOF-Area FR Others (top-down) · lignes Existing/NLP = bottom-up par AM, indicatives · €/prop = eGMV existing NA / ${AREA_PARC_NA} props (parc 15/09) · Jour ${dayQ}/${Q_DAYS} · au ${todayStr}`;
+
+  document.getElementById('existing-footnote').textContent =
+    `Pace existing = forme Q4-2025 (oct ${pct1(EX_DIST[0])} · nov ${pct1(EX_DIST[1])} · déc ${pct1(EX_DIST[2])}) · Jour ${dayQ}/${Q_DAYS} → ${pct1(paceEx)} attendu · €/prop = eGMV existing / parc au 15/09 · données au ${todayStr}`;
+  document.getElementById('nlp-footnote').textContent =
+    `Pace NLP = forme Q4-2025 (oct ${pct1(NLP_DIST[0])} · nov ${pct1(NLP_DIST[1])} · déc ${pct1(NLP_DIST[2])}, back-loaded) · Jour ${dayQ}/${Q_DAYS} → ${pct1(paceN)} attendu · données au ${todayStr}`;
+
+  renderEvolution();
+}
+
+function switchTab(tab) {
+  const tabs = ['am', 'sm', 'evolution', 'area'];
+  document.querySelectorAll('.tab').forEach((t, i) => t.classList.toggle('active', tabs[i] === tab));
+  tabs.forEach(t => document.getElementById('panel-' + t).classList.toggle('active', t === tab));
+  if (tab === 'am') setTimeout(drawCurve, 60);
+}
+
+init();
+setTimeout(drawCurve, 60);
+window.addEventListener('resize', () => { if (document.getElementById('panel-am').classList.contains('active')) drawCurve(); });
+</script>
+</body>
+</html>
